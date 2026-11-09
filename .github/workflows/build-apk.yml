@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -30,3 +32,10 @@ jobs:
         with:
           name: tasbeeh-kids-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk tasbeeh-kids.apk
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest tasbeeh-kids.apk --title "رحلة الأذكار - APK" --notes "نزّل ملف tasbeeh-kids.apk وثبّته على الموبايل."

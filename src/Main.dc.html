@@ -76,7 +76,7 @@ button{font-family:inherit;cursor:pointer}
 </div>
 <div style="text-align:center;font-size:14px;font-weight:600;margin-top:4px">{{header}}</div>
 <div style="margin:12px 20px 0;border:3px solid #FFC93C;border-radius:24px;padding:20px 20px 18px;text-align:center;background:#fff;min-height:300px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center">
-<div style="font-size:{{dFont}}px;font-weight:700;line-height:1.7;max-height:150px;overflow-y:auto"><sc-for list="{{words}}" as="w" hint-placeholder-count="3"><span style="{{w.style}}">{{w.w}}</span></sc-for></div>
+<div style="{{dBox}}"><sc-for list="{{words}}" as="w" hint-placeholder-count="3"><span style="{{w.style}}">{{w.w}}</span></sc-for></div>
 <div style="font-size:15px;margin:2px 0 14px">{{dHelp}}</div>
 <div style="display:flex;align-items:center;justify-content:center;gap:10px;min-height:76px"><sc-if value="{{ringing}}" hint-placeholder-val="{{ false }}"><svg width="30" height="48" viewBox="0 0 30 48" aria-hidden="true" style="transform:scaleX(1);animation:wave .9s ease-out infinite"><path d="M6 10q14 14 0 28" fill="none" stroke="#20B2A6" stroke-width="5" stroke-linecap="round"/><path d="M16 2q22 22 0 44" fill="none" stroke="#20B2A6" stroke-width="5" stroke-linecap="round" opacity=".6"/></svg></sc-if>
 <button aria-label="اضغط الجرس لنقرأ الذكر معًا" onClick="{{ringBell}}" style="width:72px;height:72px;border-radius:36px;border:0;background:#FF8A3D;box-shadow:0 5px 0 #D86A1F;display:flex;align-items:center;justify-content:center;padding:0"><span style="display:flex;transform-origin:50% 10%;animation:{{bellAnim}}"><svg width="40" height="40" viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></span></button>
@@ -207,12 +207,29 @@ button{font-family:inherit;cursor:pointer}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
-constructor(p) { super(p); this.state = { level: 1, tab: 'am', progress: 2, view: 'map', count: 0, stars: 24, gain: 0, ringing: false, popping: false, lock: false, shake: '', toast: '', vstat: '', kw: -1, riding: false, tx: 0, ty: 0, dir: 1, burst: false, burstIdx: 0, saves: {}, alt: 0, gameStars: 0, muted: false, mg: null, cl: null, od: null, sg: null, rc: null, maxDone: 0, day: 1, lvSt: 0, lvStars: 0, passed: false };
+constructor(p) { super(p); this.state = { level: 1, tab: 'am', progress: 2, view: 'map', count: 0, stars: 24, gain: 0, ringing: false, popping: false, lock: false, shake: '', toast: '', vstat: '', kw: -1, riding: false, tx: 0, ty: 0, dir: 1, burst: false, burstIdx: 0, saves: {}, alt: 0, gameStars: 0, muted: false, mg: null, cl: null, od: null, sg: null, rc: null, maxDone: 0, day: 1, lvSt: 0, lvStars: 0, passed: false, dayDate: null, shift: 0, hist: [] };
 this.timers = [];
 try { window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices(); } catch (e) {}
 this.g = 'boy'; try { this.nm = window.localStorage.getItem('tk_name_boy'); } catch (e) { this.nm = null; }
-this.C = [[105,505],[238,410],[112,310],[231,210],[119,112],[210,46]]; this.LVK = { 1: ['rad', 'aud', 'sub', 'bis', 'ikh'], 2: ['ikh', 'fal', 'nas', 'sub', 'rad'], 3: ['kur', 'ikh', 'fal', 'nas', 'sub'], 4: ['sey', 'kur', 'bis', 'aud', 'sub'], 5: ['kur', 'sey', 'aud', 'bis', 'sub'] }; this.CNT = { 1: 14, 2: 45, 3: 43, 4: 41, 5: 108 }; }
+this.dbKey = 'tk_db_' + this.g;
+try { const db = JSON.parse(window.localStorage.getItem(this.dbKey)); if (db && db.v === 1 && db.s) { Object.assign(this.state, db.s, { view: 'map', count: 0, gain: 0, riding: false, ringing: false, popping: false, lock: false, burst: false, toast: '', vstat: '' }); if (this.state.tab === 'pm') Object.assign(this.state, { tab: 'am', progress: this.state.alt, alt: this.state.progress }); } } catch (e) {}
+try { const chk = () => { const p = this.rollDay(); if (p && !this.state.riding && this.state.view !== 'play') { this.clearAll(); this.setState(Object.assign({}, p, { view: p.passed ? 'levelend' : 'map', count: 0, gain: 0, lock: false })); this.say(p.passed ? 'أحسنت! أنهيت المستوى' : 'يوم جديد! اليوم ' + this.ar(p.day) + (p.day > 4 ? '' : ' من ٤'), ''); } }; document.addEventListener('visibilitychange', () => { if (!document.hidden) chk(); }); setInterval(chk, 60000); } catch (e) {}
+this.C = [[105,505],[238,410],[112,310],[231,210],[119,112],[210,46]]; this.LVK = { 1: ['rad', 'aud', 'sub', 'bis', 'ikh'], 2: ['ikh', 'fal', 'nas', 'sub', 'rad'], 3: ['kur', 'ikh', 'fal', 'nas', 'sub'], 4: ['sey', 'kur', 'bis', 'aud', 'sub'], 5: ['kur', 'sey', 'aud', 'bis', 'sub'] }; this.CNT = { 1: 14, 2: 45, 3: 43, 4: 41, 5: 108 }; { const p0 = this.rollDay(); if (p0) Object.assign(this.state, p0, { view: p0.passed ? 'levelend' : 'map' }); } }
 ar(n) { return String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]); }
+today() { const d = new Date(Date.now() + (this.state.shift || 0) * 864e5); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+pmMin() { let m = 900; try { const t = JSON.parse(window.localStorage.getItem('tk_times_' + this.g)); if (t && t.pmT) m = t.pmT; } catch (e) {} return m; }
+pmOpen() { const n = new Date(); return n.getHours() * 60 + n.getMinutes() >= this.pmMin(); }
+rollDay() {
+const s = this.state, t = this.today();
+if (!s.dayDate) { s.dayDate = t; return null; }
+if (t <= s.dayDate) return null;
+const amP = s.tab === 'am' ? s.progress : s.alt;
+if (s.passed || amP === 0) return { dayDate: t, gameStars: 0, alt: s.tab === 'am' ? 0 : s.alt, passed: s.passed, day: s.day };
+const e = this.evalLevel(s.lvStars, s.lvSt, s.day);
+const hist = (s.hist || []).concat([{ d: s.dayDate, level: s.level, day: s.day, stars: s.stars, st: amP }]).slice(-400);
+if (e.pass) return { dayDate: t, passed: true, maxDone: Math.max(s.maxDone || 0, s.level), hist, day: s.day };
+return { dayDate: t, day: s.day + 1, progress: 0, alt: 0, gameStars: 0, tab: 'am', hist, passed: false };
+}
 say(msg, id) { this.setState({ toast: msg, shake: id || '' }); clearTimeout(this.tm); this.tm = setTimeout(() => this.setState({ toast: '', shake: '' }), 2400); }
 clearAll() { clearTimeout(this.autoBack); clearInterval(this.rideIv); clearInterval(this.sgIv); clearInterval(this.kwIv); clearInterval(this.chugIv); (this.timers || []).forEach(clearTimeout); this.timers = []; this.setState({ riding: false, burst: false }); try { window.speechSynthesis.cancel(); } catch (e) {} }
 later(fn, ms) { const id = setTimeout(fn, ms); this.timers.push(id); return id; }
@@ -487,11 +504,11 @@ Object.assign(out, {
 lvChips: [1,2,3,4,5].map((n) => ({ label: ar(n), aria: 'تجربة المستوى ' + ar(n), style: chip(s.level === n), pick: () => this.startLevel(n) })),
 btnStyle: 'height:26px;border-radius:13px;font-size:12px;font-weight:700;color:#1F2A5A;padding:0 6px;border:2px solid #C9D3F0;background:#fff',
 skip: () => { if (s.progress < 5 && ['map', 'play'].includes(s.view) && !s.riding) { const g = d.n + 2; this.setState({ stars: s.stars + g, lvStars: s.lvStars + (am ? g : 0), gain: g }); this.enterCheer(); } },
-reset: () => { this.clearAll(); this.setState({ progress: 0, view: 'map', count: 0, lock: false, stars: 24, tab: 'am', maxDone: 0, level: 1, gain: 0, day: 1, lvSt: 0, lvStars: 0, passed: false, saves: {}, alt: 0, gameStars: 0 }); },
+reset: () => { this.clearAll(); this.setState({ progress: 0, view: 'map', count: 0, lock: false, stars: 24, tab: 'am', maxDone: 0, level: 1, gain: 0, day: 1, lvSt: 0, lvStars: 0, passed: false, saves: {}, alt: 0, gameStars: 0, shift: 0, dayDate: this.today(), hist: [] }); },
 lvAr: ar(s.level), starsAr: ar(s.stars),
 amSeg: seg(am), pmSeg: seg(!am),
 goAm: () => { if (!s.riding && s.tab !== 'am') this.setState({ tab: 'am', progress: s.alt, alt: s.progress, count: 0 }); },
-goPm: () => { if (s.riding || s.tab === 'pm') return; if (!TEST_UNLOCK_ALL) { this.say('تفتح أذكار المساء بعد العصر', ''); return; } this.setState({ tab: 'pm', progress: s.alt, alt: s.progress, count: 0 }); },
+goPm: () => { if (s.riding || s.tab === 'pm') return; if (!TEST_UNLOCK_ALL && !this.pmOpen()) { const m = this.pmMin(); this.say('تفتح أذكار المساء بعد العصر (الساعة ' + this.ar(String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0')) + ')', ''); return; } this.setState({ tab: 'pm', progress: s.alt, alt: s.progress, count: 0 }); },
 progressTxt: ar(Math.min(s.progress, 5)) + ' من ٥',
 mascotStyle: 'position:absolute;left:' + Math.max(4, right ? mc[0] + 52 : mc[0] - 100) + 'px;top:' + (mc[1] - 25) + 'px;animation:bob 2s ease-in-out infinite' + (s.riding ? ';visibility:hidden' : ''),
 chestStyle: 'position:absolute;left:174px;top:10px;width:72px;height:72px;border-radius:24px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;padding:0;transition:all .6s ease;border:4px solid ' + (open ? '#E39A00' : '#C9D3F0') + ';background:' + (open ? '#FFE08A' : '#fff') + ';animation:' + (open ? 'wiggle 1s ease-in-out infinite' : (s.shake === 'c' ? 'wiggle .5s' : 'none')),
@@ -601,9 +618,9 @@ dot: 'width:30px;height:30px;border-radius:15px;background:' + x[1] + ';opacity:
 lendTitle: s.passed ? (s.level >= 5 ? t('أنهيتَ كل المستويات!', 'أنهيتِ كل المستويات!') : t('أنهيتَ المستوى ', 'أنهيتِ المستوى ') + ar(s.level) + '!') : (s.day >= 4 ? 'ما زال ينقص القليل!' : t('أنهيتَ اليوم ', 'أنهيتِ اليوم ') + ar(s.day) + ' من ٤!'),
 lendBonus: '+١٠ نجوم هدية الصندوق',
 lendNext: s.passed ? (s.level >= 5 ? t('أنت بطل الأذكار الكبير، بارك الله فيك', 'أنتِ بطلة الأذكار الكبيرة، بارك الله فيكِ') : t('حصلتَ على شارة ', 'حصلتِ على شارة ') + LVN[s.level] + ' ' + LBE[s.level] + ' وفتحتَ المستوى '.replace('وفتحتَ', t('وفتحتَ', 'وفتحتِ')) + ar(nl) + '!') : (s.day >= 4 ? 'ينقص ' + ar(Math.max(0, ev.nsNeed - s.lvStars)) + ' نجمة و' + ar(Math.max(0, ev.stNeed - s.lvSt)) + ' ذكرًا. نكمل يومًا إضافيًا غدًا' : t('ارجع غدًا لتكمل اليوم ', 'ارجعي غدًا لتكملي اليوم ') + ar(s.day + 1) + ' من ٤. ' + t('جمعتَ ', 'جمعتِ ') + ar(s.lvStars) + ' من ' + ar(ev.nsNeed) + ' نجمة'),
-lendBtn: s.passed ? (s.level < 5 ? 'ابدأ المستوى ' + ar(nl) : 'مكافآتي') : 'يوم جديد (تجربة الغد)',
-lendGo: () => { if (s.passed) { if (s.level < 5) this.startLevel(nl); else this.setState({ view: 'rewards' }); } else this.nextDay(); },
-nextDayBtn: () => this.nextDay(),
+lendBtn: s.passed ? (s.level < 5 ? 'ابدأ المستوى ' + ar(nl) : 'مكافآتي') : 'حسنًا، إلى الخريطة',
+lendGo: () => { if (s.passed) { if (s.level < 5) this.startLevel(nl); else this.setState({ view: 'rewards' }); } else { const p = this.rollDay(); if (p) { this.clearAll(); this.setState(Object.assign({}, p, { view: p.passed ? 'levelend' : 'map', count: 0, gain: 0, lock: false })); this.say('يوم جديد! اليوم ' + this.ar(p.day) + (p.day > 4 ? '' : ' من ٤'), ''); } else { this.setState({ view: 'map' }); this.say(this.g === 'girl' ? 'أحسنتِ! ارجعي غدًا لليوم ' + this.ar(Math.min(s.day + 1, 99)) + ' بإذن الله' : 'أحسنت! ارجع غدًا لليوم ' + this.ar(Math.min(s.day + 1, 99)) + ' بإذن الله', ''); } } },
+nextDayBtn: () => { if (s.riding || s.view === 'cheer') return; this.setState({ shift: (s.shift || 0) + 1 }); const p = this.rollDay(); if (p) { this.clearAll(); this.setState(Object.assign({}, p, { view: p.passed ? 'levelend' : 'map', count: 0, gain: 0, lock: false })); this.say(p.passed ? 'أنهيت المستوى!' : 'يوم جديد (تجربة الغد)', ''); } else this.say('انتقلنا ليوم تالٍ', ''); },
 lendMap: () => this.setState({ view: 'map' }),
 isPlay: s.view === 'play', isCheer: s.view === 'cheer',
 riding: s.riding, faceDir: s.dir, burst: s.burst, isQ: isQ,
@@ -614,7 +631,7 @@ backLabel: s.progress >= 4 ? 'اركب القطار إلى الهدية!' : 'ا�
 closePlay: () => this.setState({ view: 'map', count: 0, lock: false }),
 bars: [0,1,2,3,4].map((i) => ({ style: 'flex:1;height:14px;border-radius:7px;background:' + (i < s.progress ? '#20B2A6' : (i === s.progress ? '#FFC93C' : '#fff')) })),
 header: 'المستوى ' + ar(s.level) + ' · اليوم ' + ar(s.day) + (am ? '' : ' · المساء') + ' · الذكر ' + ar(Math.min(s.progress, 4) + 1) + ' من ٥',
-dText: d.t, dHelp: d.h, dFont: d.f,
+dText: d.t, dHelp: d.h, dFont: d.f, dBox: 'font-size:' + (d.t.length <= 35 ? 34 : d.t.length <= 70 ? 26 : d.t.length <= 110 ? 22 : d.t.length <= 170 ? 19 : d.t.length <= 300 ? 16 : 14) + 'px;font-weight:700;line-height:1.6;overflow-y:auto;max-height:' + (d.t.length > 200 ? 270 : 170) + 'px',
 tapHint: d.n > 1 ? 'اضغط لكل تسبيحة' : 'اضغط عندما تقولها',
 targetAr: ar(d.n), countAr: ar(s.count), pct: Math.min(100, Math.round(s.count / d.n * 100)),
 ringing: s.ringing, popping: s.popping,
@@ -646,6 +663,7 @@ setTimeout(() => this.setState({ popping: false }), 650);
 if (fin) setTimeout(() => this.enterCheer(), 1000);
 }
 });
+try { const o = {}; ['level','tab','progress','alt','stars','saves','gameStars','maxDone','day','lvSt','lvStars','passed','muted','dayDate','shift','hist'].forEach((k) => { o[k] = s[k]; }); const js = JSON.stringify({ v: 1, t: Date.now(), s: o }); if (js !== this.lastDb) { this.lastDb = js; window.localStorage.setItem(this.dbKey, js); } } catch (e) {}
 try { const lv = JSON.stringify({ level: s.level, day: s.day, stars: s.stars, badges: Math.min(md, 5) }); if (lv !== this.lastLive) { this.lastLive = lv; window.localStorage.setItem('tk_live_' + this.g, lv); } } catch (e) {}
 return out;
 }

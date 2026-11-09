@@ -52,10 +52,11 @@ button{font-family:inherit;cursor:pointer}
 class Component extends DCLogic {
 constructor(p) { super(p); this.state = { kid: 0, banner: false, kids: [
 { name: 'يوسف', girl: false, streak: 5, week: 32, days: ['d','d','d','d','d','t','f'], am: true, pm: true, amT: 390, pmT: 990, sound: 'soft' },
-{ name: 'سلمى', girl: true, streak: 3, week: 18, days: ['d','d','d','m','m','t','f'], am: true, pm: false, amT: 420, pmT: 1020, sound: 'fun' } ] }; }
+{ name: 'سلمى', girl: true, streak: 3, week: 18, days: ['d','d','d','m','m','t','f'], am: true, pm: false, amT: 420, pmT: 1020, sound: 'fun' } ] };  try { this.state.kids.forEach((k) => { if (!window.localStorage.getItem('tk_times_' + (k.girl ? 'girl' : 'boy'))) this.save(k); else { const t = JSON.parse(window.localStorage.getItem('tk_times_' + (k.girl ? 'girl' : 'boy'))); if (t.amT) k.amT = t.amT; if (t.pmT) k.pmT = t.pmT; } }); } catch (e) {} }
 ar(n) { return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); }
 hm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
-upd(patch) { this.setState({ kids: this.state.kids.map((k, i) => i === this.state.kid ? Object.assign({}, k, patch) : k) }); }
+save(k) { try { window.localStorage.setItem('tk_times_' + (k.girl ? 'girl' : 'boy'), JSON.stringify({ amT: k.amT, pmT: k.pmT })); } catch (e) {} }
+upd(patch) { const kids = this.state.kids.map((k, i) => i === this.state.kid ? Object.assign({}, k, patch) : k); this.save(kids[this.state.kid]); this.setState({ kids }); }
 typed(key, v, lo, hi) { const p = /^(\d{1,2}):(\d{2})$/.exec(v || ''); if (!p) return; this.upd({ [key]: Math.max(lo, Math.min(hi, +p[1] * 60 + +p[2])) }); }
 renderVals() {
 const s = this.state, k = s.kids[s.kid];

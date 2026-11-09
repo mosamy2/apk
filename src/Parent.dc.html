@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>شاشة الأهل</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap">
+<style>
+body{margin:0}
+button{font-family:inherit;cursor:pointer}
+@keyframes slideDown{0%{transform:translateY(-120px);opacity:0}15%,85%{transform:translateY(0);opacity:1}100%{transform:translateY(-120px);opacity:0}}
+@keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(14deg)}40%{transform:rotate(-12deg)}60%{transform:rotate(8deg)}80%{transform:rotate(-4deg)}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important}}
+</style>
+</helmet>
+<div dir="rtl" style="width:390px;height:920px;box-sizing:border-box;background:#EEF3FF;font-family:'Noto Sans Arabic',Arial,sans-serif;color:#1F2A5A;display:flex;flex-direction:column;position:relative;overflow:hidden">
+<sc-if value="{{banner}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:12px;left:12px;right:12px;z-index:5;background:#fff;border:3px solid #FFC93C;border-radius:20px;padding:12px 14px;display:flex;align-items:center;gap:12px;animation:slideDown 3.6s ease-in-out forwards"><div style="width:44px;height:44px;border-radius:22px;background:#FF8A3D;display:flex;align-items:center;justify-content:center;animation:shake .8s ease-in-out 2"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></div><div><div style="font-size:12px;color:#44507F">هكذا سيظهر التنبيه لطفلك</div><div style="font-size:15px;font-weight:700">{{bannerText}}</div></div></div></sc-if>
+<div style="padding:56px 20px 8px;display:flex;align-items:center;gap:12px">
+<a href="{{backHref}}" aria-label="رجوع" style="width:44px;height:44px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#1F2A5A;font-size:22px;font-weight:700">›</a>
+<div style="flex:1"><div style="font-size:22px;font-weight:700">منطقة الأهل</div><div style="font-size:12px;color:#44507F">محمية بالرقم السري · حساب أطفالكم مرتبط بحسابكم</div></div>
+</div>
+<div style="padding:4px 20px 8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><sc-for list="{{kids}}" as="k" hint-placeholder-count="2"><button onClick="{{k.pick}}" aria-pressed="{{k.sel}}" style="{{k.style}}"><span style="{{k.dot}}">{{k.initial}}</span>{{k.name}}</button></sc-for><a href="Welcome.dc.html" aria-label="إضافة طفل" style="height:48px;padding:0 16px;border-radius:24px;border:3px dashed #9AA3C7;display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;color:#1F2A5A;text-decoration:none;box-sizing:border-box">+ طفل</a></div>
+<div style="margin:0 20px 0;background:#fff;border-radius:22px;padding:14px 16px">
+<div style="display:flex;align-items:center;gap:12px"><sc-if value="{{isBoy}}" hint-placeholder-val="{{ true }}"><svg width="52" height="52" viewBox="0 0 64 64" role="img" aria-label="ولد"><circle cx="32" cy="32" r="30" fill="#FFE08A" stroke="#E39A00" stroke-width="3"/><path d="M14 56q0-12 18-12t18 12a30 30 0 0 1-36 0z" fill="#20B2A6"/><rect x="28" y="40" width="8" height="8" rx="3" fill="#E8A97E"/><ellipse cx="32" cy="29" rx="14" ry="15" fill="#F5C6A0"/><path d="M17 27q-1-16 15-16t15 16q-6-9-15-9t-15 9z" fill="#3B2A20"/><circle cx="26" cy="31" r="2.6" fill="#1F2A5A"/><circle cx="38" cy="31" r="2.6" fill="#1F2A5A"/><path d="M26 38q6 6 12 0" fill="none" stroke="#1F2A5A" stroke-width="2.6" stroke-linecap="round"/><circle cx="22" cy="36" r="3" fill="#FF8FB1" opacity=".7"/><circle cx="42" cy="36" r="3" fill="#FF8FB1" opacity=".7"/></svg></sc-if><sc-if value="{{isGirl}}" hint-placeholder-val="{{ false }}"><svg width="52" height="52" viewBox="0 0 64 64" role="img" aria-label="بنت"><circle cx="32" cy="32" r="30" fill="#FFD3E4" stroke="#E0629A" stroke-width="3"/><path d="M14 56q0-12 18-12t18 12a30 30 0 0 1-36 0z" fill="#7B5CFF"/><rect x="28" y="40" width="8" height="8" rx="3" fill="#E8A97E"/><path d="M15 30q-3-20 17-20t17 20v12q-4 3-6 0V28H21v14q-2 3-6 0z" fill="#3B2A20"/><ellipse cx="32" cy="30" rx="13" ry="14" fill="#F5C6A0"/><path d="M19 26q1-10 13-10t13 10q-6-5-13-5t-13 5z" fill="#3B2A20"/><circle cx="26" cy="32" r="2.6" fill="#1F2A5A"/><circle cx="38" cy="32" r="2.6" fill="#1F2A5A"/><path d="M26 38q6 6 12 0" fill="none" stroke="#1F2A5A" stroke-width="2.6" stroke-linecap="round"/><circle cx="22" cy="37" r="3" fill="#FF8FB1" opacity=".7"/><circle cx="42" cy="37" r="3" fill="#FF8FB1" opacity=".7"/><path d="M40 12l5-4 1 7zM40 12l-5-4-1 7z" fill="#FF6FA5"/></svg></sc-if><div style="flex:1"><div style="font-size:17px;font-weight:700">{{kidName}}</div><div style="font-size:13px;color:#44507F">{{streakText}}</div></div><div style="text-align:center"><div style="font-size:24px;font-weight:700;color:#E8890C">{{weekCount}}</div><div style="font-size:12px;color:#44507F">ذكرًا هذا الأسبوع</div></div></div>
+<div style="display:flex;justify-content:space-between;margin-top:10px"><sc-for list="{{days}}" as="d" hint-placeholder-count="7"><span style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px"><i style="{{d.style}}"></i>{{d.label}}</span></sc-for></div>
+</div>
+<div style="padding:18px 20px 8px;font-size:18px;font-weight:700">تنبيهات {{kidName}}</div>
+<div style="margin:0 20px;background:#fff;border-radius:22px;padding:4px 0">
+<div style="padding:10px 14px 12px;opacity:{{amOp}}">
+<div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div style="font-size:16px;font-weight:700">أذكار الصباح</div><div style="font-size:12px;color:#44507F">من ٤ ص إلى ١٠ ص · اكتب الوقت أو استخدم + و −</div></div><button role="switch" aria-checked="{{amOn}}" aria-label="{{amLabel}}" onClick="{{amToggle}}" style="width:60px;height:44px;border:0;background:transparent;padding:0;display:flex;align-items:center"><span style="{{amSw}}"><span style="width:26px;height:26px;border-radius:13px;background:#fff"></span></span></button></div>
+<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:4px"><button aria-label="تأخير الوقت نصف ساعة" onClick="{{amUp}}" style="width:44px;height:44px;border-radius:22px;border:0;background:#EEF3FF;font-size:22px;font-weight:700;color:#1F2A5A">+</button><label for="amtime" style="position:absolute;width:1px;height:1px;overflow:hidden">وقت أذكار الصباح</label><input id="amtime" type="time" min="04:00" max="10:00" value="{{amVal}}" onChange="{{amType}}" style="width:150px;height:48px;box-sizing:border-box;border-radius:16px;border:3px solid #FFC93C;background:#fff;text-align:center;font-size:20px;font-weight:700;color:#1F2A5A"><button aria-label="تقديم الوقت نصف ساعة" onClick="{{amDown}}" style="width:44px;height:44px;border-radius:22px;border:0;background:#EEF3FF;font-size:22px;font-weight:700;color:#1F2A5A">−</button></div>
+</div>
+<div style="height:2px;background:#EEF3FF;margin:0 14px"></div>
+<div style="padding:10px 14px 12px;opacity:{{pmOp}}">
+<div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div style="font-size:16px;font-weight:700">أذكار المساء</div><div style="font-size:12px;color:#44507F">من ٣ م إلى ٨ م · اكتب الوقت أو استخدم + و −</div></div><button role="switch" aria-checked="{{pmOn}}" aria-label="{{pmLabel}}" onClick="{{pmToggle}}" style="width:60px;height:44px;border:0;background:transparent;padding:0;display:flex;align-items:center"><span style="{{pmSw}}"><span style="width:26px;height:26px;border-radius:13px;background:#fff"></span></span></button></div>
+<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:4px"><button aria-label="تأخير الوقت نصف ساعة" onClick="{{pmUp}}" style="width:44px;height:44px;border-radius:22px;border:0;background:#EEF3FF;font-size:22px;font-weight:700;color:#1F2A5A">+</button><label for="pmtime" style="position:absolute;width:1px;height:1px;overflow:hidden">وقت أذكار المساء</label><input id="pmtime" type="time" min="15:00" max="20:00" value="{{pmVal}}" onChange="{{pmType}}" style="width:150px;height:48px;box-sizing:border-box;border-radius:16px;border:3px solid #FFC93C;background:#fff;text-align:center;font-size:20px;font-weight:700;color:#1F2A5A"><button aria-label="تقديم الوقت نصف ساعة" onClick="{{pmDown}}" style="width:44px;height:44px;border-radius:22px;border:0;background:#EEF3FF;font-size:22px;font-weight:700;color:#1F2A5A">−</button></div>
+</div>
+</div>
+<div style="margin:12px 20px 0;background:#fff;border-radius:22px;padding:12px 14px">
+<div style="font-size:15px;font-weight:700;margin-bottom:8px">نغمة التنبيه</div>
+<div style="display:flex;gap:8px"><button onClick="{{soundSoft}}" style="{{softStyle}}">هادئة</button><button onClick="{{soundFun}}" style="{{funStyle}}">مرحة</button><button onClick="{{soundOff}}" style="{{offStyle}}">بدون صوت</button></div>
+<div style="font-size:12px;color:#44507F;margin-top:10px">حد أقصى ٣ تنبيهات يوميًا · لا تنبيهات بعد الساعة ٩ مساءً</div>
+</div>
+<button onClick="{{test}}" style="margin:14px 20px 0;height:56px;border-radius:28px;border:0;background:#FF8A3D;box-shadow:0 5px 0 #D86A1F;color:#1F2A5A;font-size:18px;font-weight:700">جرّب التنبيه الآن</button>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":920}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { kid: 0, banner: false, kids: [
+{ name: 'يوسف', girl: false, streak: 5, week: 32, days: ['d','d','d','d','d','t','f'], am: true, pm: true, amT: 390, pmT: 990, sound: 'soft' },
+{ name: 'سلمى', girl: true, streak: 3, week: 18, days: ['d','d','d','m','m','t','f'], am: true, pm: false, amT: 420, pmT: 1020, sound: 'fun' } ] }; }
+ar(n) { return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); }
+hm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
+upd(patch) { this.setState({ kids: this.state.kids.map((k, i) => i === this.state.kid ? Object.assign({}, k, patch) : k) }); }
+typed(key, v, lo, hi) { const p = /^(\d{1,2}):(\d{2})$/.exec(v || ''); if (!p) return; this.upd({ [key]: Math.max(lo, Math.min(hi, +p[1] * 60 + +p[2])) }); }
+renderVals() {
+const s = this.state, k = s.kids[s.kid];
+let lv = null; try { lv = JSON.parse(window.localStorage.getItem('tk_live_' + (k.girl ? 'girl' : 'boy'))); } catch (e) {}
+const seg = (on) => 'flex:1;min-height:44px;border-radius:22px;border:3px solid ' + (on ? '#FF8A3D' : '#C9D3F0') + ';background:' + (on ? '#FFE08A' : '#fff') + ';font-size:15px;font-weight:700;color:#1F2A5A';
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const letters = ['س','ح','ن','ث','ر','خ','ج'];
+const dayStyle = { d: 'background:#FFC93C', t: 'border:3px solid #FF8A3D;box-sizing:border-box;background:#fff', f: 'border:3px dashed #9AA3C7;box-sizing:border-box', m: 'background:#C9D3F0' };
+return {
+kids: s.kids.map((c, i) => ({ name: c.name, initial: c.name[0], sel: i === s.kid,
+pick: () => this.setState({ kid: i }),
+style: 'height:48px;padding:0 14px 0 8px;border-radius:24px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#1F2A5A;box-sizing:border-box;background:' + (i === s.kid ? '#FFE08A' : '#fff') + ';border:3px solid ' + (i === s.kid ? '#FF8A3D' : '#C9D3F0'),
+dot: 'width:30px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:15px;background:' + (c.girl ? '#FF6FA5' : '#FFC93C') })),
+backHref: k.girl ? 'MainGirl.dc.html' : 'Main.dc.html', kidName: k.name, isBoy: !k.girl, isGirl: k.girl,
+streakText: this.ar(k.streak) + ' أيام متتالية' + (lv ? ' · المستوى ' + this.ar(lv.level) + ' · اليوم ' + this.ar(lv.day) + ' من ٤' : ''), weekCount: this.ar(k.week),
+days: k.days.map((d, i) => ({ label: letters[i], style: 'width:26px;height:26px;border-radius:13px;' + dayStyle[d] })),
+amOn: k.am, amLabel: 'تنبيه الصباح', amSw: 'width:56px;height:32px;border-radius:16px;display:flex;align-items:center;padding:3px;box-sizing:border-box;background:' + (k.am ? '#20B2A6' : '#9AA3C7') + ';justify-content:' + (k.am ? 'flex-end' : 'flex-start'), amOp: k.am ? 1 : 0.55, amVal: this.hm(k.amT),
+amType: (e) => this.typed('amT', e.target.value, 240, 600),
+amToggle: () => this.upd({ am: !k.am }),
+amUp: () => this.upd({ amT: clamp(k.amT + 30, 240, 600) }),
+amDown: () => this.upd({ amT: clamp(k.amT - 30, 240, 600) }),
+pmOn: k.pm, pmLabel: 'تنبيه المساء', pmSw: 'width:56px;height:32px;border-radius:16px;display:flex;align-items:center;padding:3px;box-sizing:border-box;background:' + (k.pm ? '#20B2A6' : '#9AA3C7') + ';justify-content:' + (k.pm ? 'flex-end' : 'flex-start'), pmOp: k.pm ? 1 : 0.55, pmVal: this.hm(k.pmT),
+pmType: (e) => this.typed('pmT', e.target.value, 900, 1200),
+pmToggle: () => this.upd({ pm: !k.pm }),
+pmUp: () => this.upd({ pmT: clamp(k.pmT + 30, 900, 1200) }),
+pmDown: () => this.upd({ pmT: clamp(k.pmT - 30, 900, 1200) }),
+softStyle: seg(k.sound === 'soft'), funStyle: seg(k.sound === 'fun'), offStyle: seg(k.sound === 'off'),
+soundSoft: () => this.upd({ sound: 'soft' }), soundFun: () => this.upd({ sound: 'fun' }), soundOff: () => this.upd({ sound: 'off' }),
+banner: s.banner,
+bannerText: 'صباح الخير يا ' + k.name + '! أذكارك مستنياك',
+test: () => { this.setState({ banner: false }); setTimeout(() => this.setState({ banner: true }), 30); setTimeout(() => this.setState({ banner: false }), 3700); }
+};
+}
+}
+</script>
+</body>
+</html>

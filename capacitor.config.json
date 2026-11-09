@@ -1,0 +1,7 @@
+{
+  "appId": "com.tasbeeh.kids",
+  "appName": "رحلة الأذكار",
+  "webDir": "www",
+  "server": { "androidScheme": "https" },
+  "android": { "backgroundColor": "#DFF3FF" }
+}

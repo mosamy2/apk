@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>الرقم السري للأهل</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap">
+<style>
+body{margin:0}
+button{font-family:inherit;cursor:pointer}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-12px)}40%{transform:translateX(12px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important}}
+</style>
+</helmet>
+<div dir="rtl" style="width:390px;height:844px;box-sizing:border-box;background:#EEF3FF;font-family:'Noto Sans Arabic',Arial,sans-serif;color:#1F2A5A;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;padding:0 20px">
+<a href="Who.dc.html" aria-label="رجوع" style="position:absolute;top:56px;right:20px;width:44px;height:44px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#1F2A5A;font-size:22px;font-weight:700">›</a>
+<div style="margin-top:96px;width:76px;height:76px;border-radius:38px;background:#fff;display:flex;align-items:center;justify-content:center"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#1F2A5A" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+<div style="font-size:26px;font-weight:700;margin-top:16px">للأهل فقط</div>
+<div style="font-size:14px;font-weight:600;margin-top:6px;text-align:center;color:#44507F">اكتبوا الرقم السري لفتح منطقة الأهل</div>
+<div style="display:flex;gap:16px;margin-top:28px;animation:{{dotsAnim}}"><sc-for list="{{dots}}" as="d" hint-placeholder-count="4"><i style="{{d.style}}"></i></sc-for></div>
+<div style="height:22px;margin-top:12px;font-size:14px;font-weight:700;color:{{msgColor}}">{{msg}}</div>
+<div style="display:grid;grid-template-columns:repeat(3,72px);gap:14px;margin-top:14px;justify-content:center"><sc-for list="{{keys}}" as="k" hint-placeholder-count="12"><button aria-label="{{k.label}}" onClick="{{k.press}}" style="{{k.style}}">{{k.text}}</button></sc-for></div>
+<a href="ForgotPin.dc.html" style="margin-top:8px;min-height:44px;display:flex;align-items:center;font-size:14px;font-weight:700;text-decoration:underline;color:#1F2A5A">نسيت الرقم السري؟</a>
+<sc-if value="{{ok}}" hint-placeholder-val="{{ false }}"><a id="gopin" href="Parent.dc.html" style="position:absolute;left:20px;right:20px;bottom:40px;height:60px;border-radius:30px;background:#20B2A6;box-shadow:0 5px 0 #138A80;color:#1F2A5A;font-size:19px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;animation:pulse .7s ease-in-out infinite">فتح منطقة الأهل</a></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { pin: '', status: 'idle' }; }
+press(d) {
+const s = this.state;
+if (s.status !== 'idle') return;
+const pin = (d === 'del') ? s.pin.slice(0, -1) : (s.pin.length < 4 ? s.pin + d : s.pin);
+if (pin.length === 4) {
+if (pin === '1234') {
+this.setState({ pin, status: 'ok' });
+setTimeout(() => { try { document.getElementById('gopin').click(); } catch (e) {} }, 900);
+} else {
+this.setState({ pin, status: 'error' });
+setTimeout(() => this.setState({ pin: '', status: 'idle' }), 900);
+}
+} else { this.setState({ pin }); }
+}
+renderVals() {
+const s = this.state;
+const ar = '٠١٢٣٤٥٦٧٨٩';
+const col = s.status === 'error' ? '#D64545' : (s.status === 'ok' ? '#20B2A6' : '#FF8A3D');
+const keyStyle = 'width:72px;height:72px;border-radius:36px;border:0;background:#fff;font-size:28px;font-weight:700;color:#1F2A5A';
+const order = ['1','2','3','4','5','6','7','8','9','','0','del'];
+return {
+dots: [0,1,2,3].map((i) => ({ style: 'width:22px;height:22px;border-radius:11px;box-sizing:border-box;border:3px solid ' + (i < s.pin.length ? col : '#9AA3C7') + ';background:' + (i < s.pin.length ? col : 'transparent') })),
+dotsAnim: s.status === 'error' ? 'shake .5s ease-in-out' : 'none',
+msg: s.status === 'error' ? 'الرقم غير صحيح، حاولوا مرة أخرى' : (s.status === 'ok' ? 'أهلًا بكم' : ''),
+msgColor: s.status === 'error' ? '#B3261E' : '#0F6E66',
+ok: s.status === 'ok',
+keys: order.map((k) => k === '' ? { label: '', text: '', style: 'width:72px;height:72px;visibility:hidden', press: () => {} } : { label: k === 'del' ? 'مسح' : ar[+k], text: k === 'del' ? 'مسح' : ar[+k], style: k === 'del' ? keyStyle + ';background:#DDE5FA;font-size:17px' : keyStyle, press: () => this.press(k) })
+};
+}
+}
+</script>
+</body>
+</html>

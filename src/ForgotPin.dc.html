@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>استعادة الرقم السري</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap">
+<style>
+body{margin:0}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes draw{from{stroke-dashoffset:40}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important}}
+</style>
+</helmet>
+<div dir="rtl" style="width:390px;height:844px;box-sizing:border-box;background:#EEF3FF;font-family:'Noto Sans Arabic',Arial,sans-serif;color:#1F2A5A;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;padding:0 20px">
+<a href="Pin.dc.html" aria-label="رجوع" style="position:absolute;top:56px;right:20px;width:44px;height:44px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#1F2A5A;font-size:22px;font-weight:700">›</a>
+<div style="margin-top:68px;display:flex;gap:8px"><sc-for list="{{bars}}" as="b" hint-placeholder-count="3"><i style="{{b.style}}"></i></sc-for></div>
+<sc-if value="{{s1}}" hint-placeholder-val="{{ true }}"><div style="width:100%;display:flex;flex-direction:column;align-items:center;text-align:center">
+<div style="margin-top:36px;width:84px;height:84px;border-radius:42px;background:#fff;display:flex;align-items:center;justify-content:center"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#1F2A5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
+<div style="font-size:26px;font-weight:700;margin-top:18px">تأكيد أنكم من الأهل</div>
+<div style="font-size:15px;font-weight:600;margin-top:8px;line-height:1.7;color:#44507F">سنرسل رمزًا مكوّنًا من ٤ أرقام إلى بريد حساب الأهل<br><b style="color:#1F2A5A">n***@example.com</b></div>
+<div style="font-size:13px;font-weight:600;margin-top:16px;color:#44507F">هذا يضمن ألا يغيّر الأطفال الرقم السري بأنفسهم</div></div></sc-if>
+<sc-if value="{{s2}}" hint-placeholder-val="{{ false }}"><div style="width:100%;display:flex;flex-direction:column;align-items:center;text-align:center">
+<div style="font-size:26px;font-weight:700;margin-top:48px">اكتبوا رمز التحقق</div>
+<div style="font-size:15px;font-weight:600;margin-top:8px;color:#44507F">أرسلناه إلى n***@example.com</div>
+<div style="font-size:12px;font-weight:600;margin-top:4px;color:#44507F">للتجربة في هذا النموذج: الرمز ١٢٣٤</div>
+<div style="width:100%;margin-top:14px"><label for="code" style="display:block;font-size:14px;font-weight:700;margin-bottom:6px">رمز التحقق</label><input id="code" type="text" inputmode="numeric" maxlength="4" placeholder="- - - -" onInput="{{codeIn}}" style="width:100%;box-sizing:border-box;height:56px;border-radius:16px;border:3px solid #FFC93C;background:#fff;text-align:center;letter-spacing:8px;font-size:22px;font-weight:700;color:#1F2A5A"></div>
+<div style="height:22px;margin-top:10px;font-size:14px;font-weight:700;color:#B3261E">{{err}}</div>
+<div style="height:22px;margin-top:2px;font-size:14px;font-weight:700;color:#0F6E66">{{info}}</div>
+<button onClick="{{resend}}" style="min-height:44px;padding:0 16px;border:0;background:transparent;font-size:14px;font-weight:700;text-decoration:underline;color:#1F2A5A">إعادة إرسال الرمز</button></div></sc-if>
+<sc-if value="{{s3}}" hint-placeholder-val="{{ false }}"><div style="width:100%;display:flex;flex-direction:column;align-items:center;text-align:center">
+<div style="font-size:26px;font-weight:700;margin-top:48px">اختاروا رقمًا سريًا جديدًا</div>
+<div style="font-size:15px;font-weight:600;margin-top:8px;color:#44507F">٤ أرقام يسهل عليكم تذكّرها ويصعب على الأطفال تخمينها</div>
+<div style="width:100%;margin-top:14px"><label for="pin1" style="display:block;font-size:14px;font-weight:700;margin-bottom:6px">الرقم الجديد</label><input id="pin1" type="password" inputmode="numeric" maxlength="4" placeholder="••••" onInput="{{pin1In}}" style="width:100%;box-sizing:border-box;height:56px;border-radius:16px;border:3px solid #FFC93C;background:#fff;text-align:center;letter-spacing:8px;font-size:22px;font-weight:700;color:#1F2A5A"></div>
+<div style="width:100%;margin-top:14px"><label for="pin2" style="display:block;font-size:14px;font-weight:700;margin-bottom:6px">أعيدوا كتابته</label><input id="pin2" type="password" inputmode="numeric" maxlength="4" placeholder="••••" onInput="{{pin2In}}" style="width:100%;box-sizing:border-box;height:56px;border-radius:16px;border:3px solid #FFC93C;background:#fff;text-align:center;letter-spacing:8px;font-size:22px;font-weight:700;color:#1F2A5A"></div>
+<div style="height:22px;margin-top:10px;font-size:14px;font-weight:700;color:#B3261E">{{err}}</div></div></sc-if>
+<sc-if value="{{s4}}" hint-placeholder-val="{{ false }}"><div style="width:100%;display:flex;flex-direction:column;align-items:center;text-align:center">
+<div style="margin-top:90px;width:120px;height:120px;border-radius:60px;background:#20B2A6;display:flex;align-items:center;justify-content:center;animation:pop .6s ease-out"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" stroke-dasharray="40" style="animation:draw .6s .3s ease-out both"/></svg></div>
+<div style="font-size:26px;font-weight:700;margin-top:22px">تم تغيير الرقم السري</div>
+<div style="font-size:15px;font-weight:600;margin-top:8px;color:#44507F">استخدموا الرقم الجديد في المرة القادمة</div></div></sc-if>
+<sc-if value="{{notDone}}" hint-placeholder-val="{{ true }}"><button onClick="{{next}}" style="position:absolute;left:20px;right:20px;bottom:44px;height:60px;border-radius:30px;border:0;background:#FF8A3D;box-shadow:0 5px 0 #D86A1F;color:#1F2A5A;font-size:19px;font-weight:700">{{btn}}</button></sc-if>
+<sc-if value="{{s4}}" hint-placeholder-val="{{ false }}"><a href="Pin.dc.html" style="position:absolute;left:20px;right:20px;bottom:44px;height:60px;border-radius:30px;background:#20B2A6;box-shadow:0 5px 0 #138A80;color:#1F2A5A;font-size:19px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center">العودة وكتابة الرقم الجديد</a></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { step: 1, code: '', pin1: '', pin2: '', err: '', info: '' }; }
+nz(v) { return String(v).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)); }
+renderVals() {
+const s = this.state;
+const btns = ['', 'إرسال رمز التحقق', 'تأكيد الرمز', 'حفظ الرقم الجديد'];
+return {
+s1: s.step === 1, s2: s.step === 2, s3: s.step === 3, s4: s.step === 4,
+notDone: s.step < 4, err: s.err, info: s.info,
+resend: () => { this.setState({ info: 'تم إرسال رمز جديد إلى n***@example.com', err: '' }); setTimeout(() => this.setState({ info: '' }), 3500); }, btn: btns[s.step] || '',
+bars: [1,2,3].map((i) => ({ style: 'width:44px;height:10px;border-radius:5px;background:' + (s.step >= i ? '#FF8A3D' : '#C9D3F0') + (s.step === 4 ? ';background:#20B2A6' : '') })),
+codeIn: (e) => this.setState({ code: e.target.value, err: '' }),
+pin1In: (e) => this.setState({ pin1: e.target.value, err: '' }),
+pin2In: (e) => this.setState({ pin2: e.target.value, err: '' }),
+next: () => {
+if (s.step === 1) this.setState({ step: 2, err: '' });
+else if (s.step === 2) { if (this.nz(s.code).trim() === '1234') this.setState({ step: 3, err: '' }); else this.setState({ err: 'الرمز غير صحيح، حاولوا مرة أخرى' }); }
+else if (s.step === 3) {
+if (!/^\d{4}$/.test(this.nz(s.pin1))) this.setState({ err: 'اكتبوا ٤ أرقام' });
+else if (this.nz(s.pin1) !== this.nz(s.pin2)) this.setState({ err: 'الرقمان غير متطابقين' });
+else this.setState({ step: 4, err: '' });
+}
+}
+};
+}
+}
+</script>
+</body>
+</html>

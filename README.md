@@ -1,4 +1,4 @@
-# رحلة الأذكار (Tasbeeh Kids)
+# سبحة الأبطال (Tasbeeh Kids)
 
 - `src/` : صفحات التصميم (`*.dc.html`)
 - `build.mjs` + `tools/runtime.js` : يحوّلها لتطبيق ويب مستقل في `www/`

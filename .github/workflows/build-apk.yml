@@ -38,4 +38,4 @@ jobs:
         run: |
           cp android/app/build/outputs/apk/debug/app-debug.apk tasbeeh-kids.apk
           gh release delete latest --yes --cleanup-tag || true
-          gh release create latest tasbeeh-kids.apk --title "رحلة الأذكار - APK" --notes "نزّل ملف tasbeeh-kids.apk وثبّته على الموبايل."
+          gh release create latest tasbeeh-kids.apk --title "سبحة الأبطال - APK" --notes "نزّل ملف tasbeeh-kids.apk وثبّته على الموبايل."

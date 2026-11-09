@@ -9,7 +9,7 @@ for (const f of ['manifest.webmanifest', 'icon-192.png', 'icon-512.png']) if (fs
 const fix = (s) => s.replace(/(["'(])([A-Za-z]+)\.dc\.html/g, '$1$2.html');
 for (const file of fs.readdirSync(SRC).filter((f) => f.endsWith('.dc.html'))) {
   const html = fs.readFileSync(path.join(SRC, file), 'utf8');
-  const title = (html.match(/<title>([^<]*)<\/title>/) || [, 'رحلة الأذكار'])[1];
+  const title = (html.match(/<title>([^<]*)<\/title>/) || [, 'سبحة الأبطال'])[1];
   const xdc = html.match(/<x-dc>([\s\S]*?)<\/x-dc>/)[1];
   const helmet = (xdc.match(/<helmet>([\s\S]*?)<\/helmet>/) || [, ''])[1];
   const tpl = fix(xdc.replace(/<helmet>[\s\S]*?<\/helmet>/, ''));

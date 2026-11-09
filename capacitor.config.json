@@ -1,6 +1,6 @@
 {
   "appId": "com.tasbeeh.kids",
-  "appName": "رحلة الأذكار",
+  "appName": "سبحة الأبطال",
   "webDir": "www",
   "server": { "androidScheme": "https" },
   "android": { "backgroundColor": "#DFF3FF" }

@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.11' }
-      - run: pip install edge-tts
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && pip install edge-tts
       - run: python tools/tts_samples.py
       - run: |
           git config user.name "github-actions"; git config user.email "actions@github.com"

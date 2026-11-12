@@ -57,3 +57,15 @@ if os.path.isdir(IN):
         done[f] = {'duration': round(info.duration, 2), 'text': ' '.join(s.text.strip() for s in segs)}
         print(f, done[f])
     json.dump(done, open(INOUT, 'w', encoding='utf8'), ensure_ascii=False, indent=1)
+
+# word-level transcription of long recordings (several adhkar in one file) in audio/full/
+FU = 'audio/full'; FUOUT = 'audio/full_asr.json'
+if os.path.isdir(FU):
+    done = json.load(open(FUOUT, encoding='utf8')) if os.path.exists(FUOUT) else {}
+    for f in sorted(os.listdir(FU)):
+        if f in done or not re.search(r'\.(mp3|m4a|ogg|wav)$', f): continue
+        if model is None: model = WhisperModel('large-v3', device='cpu', compute_type='int8')
+        segs, info = model.transcribe(FU + '/' + f, language='ar', word_timestamps=True, beam_size=5, condition_on_previous_text=False)
+        done[f] = {'duration': round(info.duration, 2), 'words': [{'w': w.word.strip(), 's': round(w.start, 2), 'e': round(w.end, 2)} for s in segs for w in s.words if w.word.strip()]}
+        print(f, len(done[f]['words']), 'words')
+    json.dump(done, open(FUOUT, 'w', encoding='utf8'), ensure_ascii=False, indent=1)

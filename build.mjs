@@ -6,6 +6,16 @@ fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 fs.copyFileSync('tools/runtime.js', path.join(OUT, 'runtime.js'));
 for (const f of ['manifest.webmanifest', 'icon-192.png', 'icon-512.png']) if (fs.existsSync('tools/' + f)) fs.copyFileSync('tools/' + f, path.join(OUT, f));
+const TKA = { boy: {}, girl: {}, husary: {} };
+if (fs.existsSync('audio')) {
+  fs.mkdirSync(path.join(OUT, 'audio'), { recursive: true });
+  for (const f of fs.readdirSync('audio')) {
+    const m = /^(boy|girl|husary)_([a-z]+)\.(mp3|m4a|ogg|wav)$/.exec(f);
+    if (!m) continue;
+    fs.copyFileSync(path.join('audio', f), path.join(OUT, 'audio', f));
+    TKA[m[1]][m[2]] = 'audio/' + f;
+  }
+}
 const fix = (s) => s.replace(/(["'(])([A-Za-z]+)\.dc\.html/g, '$1$2.html');
 for (const file of fs.readdirSync(SRC).filter((f) => f.endsWith('.dc.html'))) {
   const html = fs.readFileSync(path.join(SRC, file), 'utf8');
@@ -23,6 +33,7 @@ for (const file of fs.readdirSync(SRC).filter((f) => f.endsWith('.dc.html'))) {
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#7B5CFF">
 <link rel="manifest" href="manifest.webmanifest">
+<script>window.TK_AUDIO=${JSON.stringify(TKA)};</script>
 <title>${title}</title>
 <style>html,body{margin:0;height:100%;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}input{-webkit-user-select:text;user-select:text}#stage{position:absolute;overflow:hidden}</style>
 ${helmet}

@@ -16,6 +16,8 @@ if (fs.existsSync('audio')) {
     TKA[m[1]][m[2]] = 'audio/' + f;
   }
 }
+let TKT = {};
+if (fs.existsSync('audio/timings.json')) { const t = JSON.parse(fs.readFileSync('audio/timings.json', 'utf8')); for (const k in t) TKT[k] = t[k].words.map((w) => w.s); }
 const fix = (s) => s.replace(/(["'(])([A-Za-z]+)\.dc\.html/g, '$1$2.html');
 for (const file of fs.readdirSync(SRC).filter((f) => f.endsWith('.dc.html'))) {
   const html = fs.readFileSync(path.join(SRC, file), 'utf8');
@@ -33,7 +35,7 @@ for (const file of fs.readdirSync(SRC).filter((f) => f.endsWith('.dc.html'))) {
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#7B5CFF">
 <link rel="manifest" href="manifest.webmanifest">
-<script>window.TK_AUDIO=${JSON.stringify(TKA)};</script>
+<script>window.TK_AUDIO=${JSON.stringify(TKA)};window.TK_TIMES=${JSON.stringify(TKT)};</script>
 <title>${title}</title>
 <style>html,body{margin:0;height:100%;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}input{-webkit-user-select:text;user-select:text}#stage{position:absolute;overflow:hidden}</style>
 ${helmet}

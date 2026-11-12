@@ -654,8 +654,10 @@ this.ctx();
 const runKw = (per) => { clearInterval(this.kwIv); this.kwIv = setInterval(() => { const n = this.state.kw + 1; if (n >= ws.length) { clearInterval(this.kwIv); this.setState({ kw: -1 }); } else this.setState({ kw: n }); }, per); };
 try { if (this.curAudio) this.curAudio.pause(); } catch (e) {}
 let usedAudio = false;
-if (aud) { try { const a = new Audio(Array.isArray(aud) ? aud[0] : aud); this.curAudio = a; a.onloadedmetadata = () => { if (isFinite(a.duration) && a.duration > 0) runKw(a.duration * 1000 / ws.length); }; a.onended = () => { clearInterval(this.kwIv); this.setState({ ringing: false, kw: -1 }); }; a.onerror = () => { this.setState({ ringing: false, kw: -1 }); }; const pr = a.play(); if (pr && pr.catch) pr.catch(() => {}); usedAudio = true; } catch (e) {} }
-if (usedAudio) { runKw(isQ ? 700 : 520); return; }
+if (aud) { try { const a = new Audio(Array.isArray(aud) ? aud[0] : aud); this.curAudio = a; const url0 = String(Array.isArray(aud) ? aud[0] : aud), tm = (window.TK_TIMES || {})[url0.replace(/^.*\//, '').replace(/\.[^.]+$/, '')];
+if (tm && tm.length === ws.length) { clearInterval(this.kwIv); this.kwIv = setInterval(() => { const t = a.currentTime; let k = -1; for (let q = 0; q < tm.length; q++) if (tm[q] <= t) k = q; if (k !== this.state.kw) this.setState({ kw: k }); }, 80); }
+else a.onloadedmetadata = () => { if (isFinite(a.duration) && a.duration > 0) runKw(a.duration * 1000 / ws.length); }; a.onended = () => { clearInterval(this.kwIv); this.setState({ ringing: false, kw: -1 }); }; a.onerror = () => { this.setState({ ringing: false, kw: -1 }); }; const pr = a.play(); if (pr && pr.catch) pr.catch(() => {}); usedAudio = true; } catch (e) {} }
+if (usedAudio) { if (!this.curAudio || !(window.TK_TIMES || {})[String(Array.isArray(aud) ? aud[0] : aud).replace(/^.*\//, '').replace(/\.[^.]+$/, '')]) runKw(isQ ? 700 : 520); return; }
 this.voice(d.t, isQ ? 'qari' : this.g, true);
 runKw(isQ ? 700 : 520);
 setTimeout(() => this.setState({ ringing: false, kw: -1 }), Math.max(2500, ws.length * (isQ ? 700 : 520) + 800));

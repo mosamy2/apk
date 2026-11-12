@@ -45,3 +45,15 @@ for f in todo:
                      'words': [{'w': ref[i], 's': round(start[i], 2), 'e': round(end[i], 2)} for i in range(len(ref))]}
     print(name, 'matched', matched, '/', len(ref), 'duration', round(dur, 1))
 json.dump(timings, open(OUT, 'w', encoding='utf8'), ensure_ascii=False, indent=1)
+
+# plain transcription of unknown recordings dropped in audio/inbox/
+IN = 'audio/inbox'; INOUT = 'audio/inbox_asr.json'
+if os.path.isdir(IN):
+    done = json.load(open(INOUT, encoding='utf8')) if os.path.exists(INOUT) else {}
+    for f in sorted(os.listdir(IN)):
+        if f in done or not re.search(r'\.(mp3|m4a|ogg|wav)$', f): continue
+        if model is None: model = WhisperModel('large-v3', device='cpu', compute_type='int8')
+        segs, info = model.transcribe(IN + '/' + f, language='ar', beam_size=5, condition_on_previous_text=False)
+        done[f] = {'duration': round(info.duration, 2), 'text': ' '.join(s.text.strip() for s in segs)}
+        print(f, done[f])
+    json.dump(done, open(INOUT, 'w', encoding='utf8'), ensure_ascii=False, indent=1)

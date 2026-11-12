@@ -1,12 +1,12 @@
 import asyncio, os, subprocess, edge_tts
-TXT = "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ"
+TXT = "أَعُوذُ، بِكَلِمَاتِ اللَّهِ التَّامَّاتِ، مِنْ شَرِّ مَا خَلَقَ."
 # (name, voice, formant/pitch factor, edge pitch, rate)
-V = [("girl_salma_a","ar-EG-SalmaNeural",1.12,"+8Hz","+6%"),
-     ("girl_salma_b","ar-EG-SalmaNeural",1.20,"+10Hz","+8%"),
-     ("girl_zariyah_a","ar-SA-ZariyahNeural",1.12,"+8Hz","+6%"),
-     ("boy_shakir_a","ar-EG-ShakirNeural",1.22,"+6Hz","+6%"),
-     ("boy_shakir_b","ar-EG-ShakirNeural",1.32,"+8Hz","+8%"),
-     ("boy_hamed_a","ar-SA-HamedNeural",1.25,"+6Hz","+6%")]
+V = [("girl_salma_slow","ar-EG-SalmaNeural",1.08,"+2Hz","-14%"),
+     ("girl_salma_slower","ar-EG-SalmaNeural",1.12,"+4Hz","-22%"),
+     ("girl_zariyah_slow","ar-SA-ZariyahNeural",1.08,"+2Hz","-14%"),
+     ("boy_shakir_slow","ar-EG-ShakirNeural",1.12,"+2Hz","-14%"),
+     ("boy_shakir_slower","ar-EG-ShakirNeural",1.18,"+4Hz","-22%"),
+     ("boy_hamed_slow","ar-SA-HamedNeural",1.14,"+2Hz","-14%")]
 async def main():
     os.makedirs("audio/samples", exist_ok=True)
     for n, v, f, p, r in V:

@@ -1,0 +1,18 @@
+name: TTS samples
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  tts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install edge-tts
+      - run: python tools/tts_samples.py
+      - run: |
+          git config user.name "github-actions"; git config user.email "actions@github.com"
+          git add audio/samples || true
+          git commit -m "TTS samples [skip ci]" || exit 0
+          git push

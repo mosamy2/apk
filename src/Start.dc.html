@@ -53,6 +53,7 @@ class Component extends DCLogic {
 constructor(p) {
 super(p);
 const T = window.TK, skip = !!(T && T.qs('skip'));
+try { if (T && T.acct()) T.notif.sync(); } catch (e) {}
 this.state = { phase: skip ? 'ready' : 'intro' };
 if (!skip) setTimeout(() => this.setState({ phase: 'ready' }), 3000);
 }

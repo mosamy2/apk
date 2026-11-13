@@ -24,6 +24,11 @@ jobs:
           npx capacitor-assets generate --android --iconBackgroundColor '#7B5CFF' --splashBackgroundColor '#DFF3FF'
       - name: Portrait only
         run: sed -i 's/<activity/<activity android:screenOrientation="portrait"/' android/app/src/main/AndroidManifest.xml
+      - name: Notification permissions and alert sounds
+        run: |
+          sed -i 's#<application#<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/><uses-permission android:name="android.permission.USE_EXACT_ALARM"/><uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/><uses-permission android:name="android.permission.VIBRATE"/><application#' android/app/src/main/AndroidManifest.xml
+          mkdir -p android/app/src/main/res/raw
+          cp audio/boy_alerts.mp3 audio/girl_alerts.mp3 android/app/src/main/res/raw/
       - run: npx cap sync android
       - name: Build debug APK
         working-directory: android

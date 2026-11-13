@@ -238,7 +238,9 @@ try { const chk = () => { const p = this.rollDay(); if (p && !this.state.riding 
 try { this.dev = new URLSearchParams(window.location.search).get('dev') === '1'; this.startAlerts(); } catch (e) {} try { document.addEventListener('visibilitychange', () => { if (document.hidden && this.curAudio) { try { this.curAudio.pause(); } catch (e) {} } }); } catch (e) {} this.C = [[105,510],[238,444],[112,377],[231,311],[119,245],[225,178],[112,112],[210,46]]; this.DAYS = [['ikh', 'sub', 'rad', 'ist', 'sal'], ['kur', 'aud', 'hwl', 'sub', 'hmd'], ['sey', 'hyy', 'ist', 'sal', 'lai'], ['bis', 'hsb', 'ikh', 'sub', 'hmd']]; this.CT = {"ikh": [1, 1, 1, 2, 2], "fal": [1, 1, 1, 2, 2], "nas": [1, 1, 1, 2, 2], "kur": [1, 1, 1, 1, 1], "sey": [1, 1, 1, 1, 1], "sub": [10, 20, 33, 33, 40], "ist": [3, 5, 10, 10, 15], "sal": [3, 5, 10, 10, 15], "rad": [1, 1, 3, 3, 3], "aud": [1, 1, 3, 3, 3], "bis": [1, 1, 3, 3, 3], "lai": [1, 1, 3, 3, 10], "hmd": [1, 1, 3, 3, 3], "hwl": [3, 5, 10, 10, 20], "hsb": [1, 1, 3, 3, 7], "hyy": [1, 1, 3, 3, 3]}; this.dayKeys = (day) => this.DAYS[(Math.max(1, day) - 1) % 4].concat(['fal', 'nas']); this.dayList = (lv, day) => this.dayKeys(day).map((k) => [k, this.CT[k][lv - 1]]); this.seenKeys = () => { const out = []; for (let d = 1; d <= Math.min(this.state.day || 1, 4); d++) this.dayKeys(d).forEach((k) => { if (out.indexOf(k) < 0) out.push(k); }); return out; }; { const p0 = this.rollDay(); if (p0) Object.assign(this.state, p0, { view: p0.passed ? 'levelend' : 'map' }); } }
 ar(n) { return String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]); }
 today() { const d = new Date(Date.now() + (this.state.shift || 0) * 864e5); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+noteSession() { try { const T = window.TK; if (T && T.notif && T.notif.inWindow(this.kid, this.state.tab)) T.notif.skipToday(this.kid, this.state.tab); } catch (e) {} }
 startAlerts() {
+try { if (window.TK && window.TK.notif) window.TK.notif.sync(); } catch (e) {}
 const chk = () => { try {
 const T = window.TK; if (!T || this.state.view === 'play' || this.state.riding) return;
 const n = new Date(), m = n.getHours() * 60 + n.getMinutes(), t = T.times(this.kid), key = 'tk_fired_' + this.kid, day = n.getFullYear() + '-' + (n.getMonth() + 1) + '-' + n.getDate();
@@ -247,7 +249,7 @@ const nm = this.nm || (this.g === 'girl' ? 'سلمى' : 'يوسف');
 [['am', t.am, t.amT, 'يلا يا ' + nm + '، وقت أذكار الصباح!'], ['pm', t.pm, t.pmT, 'يلا يا ' + nm + '، وقت أذكار المساء!']].forEach((x) => {
 if (x[1] && m >= x[2] && m < x[2] + 10 && f[x[0]] !== day) {
 f[x[0]] = day; try { window.localStorage.setItem(key, JSON.stringify(f)); } catch (e) {}
-if (t.sound !== 'off') { try { const u = ((window.TK_AUDIO || {})[this.g] || {}).alert; if (u && !this.state.muted) { const au = new Audio(u); au.play().catch(() => {}); } } catch (e) {} }
+if (t.sound !== 'off' && !T.notif.native()) { try { const u = ((window.TK_AUDIO || {})[this.g] || {}).alerts; if (u && !this.state.muted) { const au = new Audio(u); au.play().catch(() => {}); } } catch (e) {} }
 this.say(x[3], '');
 } });
 } catch (e) {} };
@@ -542,7 +544,7 @@ out['n' + k] = NAMES[k - 1];
 out['l' + k] = 'position:absolute;left:' + (cx - 60) + 'px;top:' + (cy + sz / 2 + 4) + 'px;width:120px;text-align:center;font-size:' + (st === 'cur' ? 13 : 12) + 'px;font-weight:700;color:' + (st === 'cur' ? '#1F2A5A' : '#44507F') + ';transition:all .6s ease';
 out['g' + k] = k <= dp;
 out['t' + k] = () => {
-if (st === 'cur') { if (s.view === 'map') this.setState({ view: 'play', count: 0, gain: 0 }); }
+if (st === 'cur') { if (s.view === 'map') { this.noteSession(); this.setState({ view: 'play', count: 0, gain: 0 }); } }
 else if (st === 'done') this.say('ما شاء الله! أنهيت هذا الذكر', '');
 else this.say(am ? 'أكمل الذكر الذي قبله أولًا' : 'تفتح أذكار المساء بعد العصر', 'k' + k);
 };

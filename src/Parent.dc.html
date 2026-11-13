@@ -78,10 +78,11 @@ if (!kids.length) kids.push({ id: 'demo', name: 'طفل', girl: false, streak: 0
 const qk = T ? T.qs('k') : null, qi = Math.max(0, kids.findIndex((x) => x.id === qk));
 this.state = { kid: qi, banner: false, kids, nm: kids[qi].name, g: kids[qi].girl ? 'girl' : 'boy', msg: '', askDel: false };
 }
+syncGo(u) { const T = window.TK; let done = false; const go = () => { if (!done) { done = true; T.go(u); } }; try { T.notif.sync().then(go, go); setTimeout(go, 2500); } catch (e) { go(); } }
 ar(n) { return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); }
 hm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
 save(k) { try { if (k.id !== 'demo') window.localStorage.setItem('tk_times_' + k.id, JSON.stringify({ amT: k.amT, pmT: k.pmT, am: k.am, pm: k.pm, sound: k.sound })); } catch (e) {} }
-upd(patch) { const kids = this.state.kids.map((k, i) => i === this.state.kid ? Object.assign({}, k, patch) : k); this.save(kids[this.state.kid]); this.setState({ kids }); }
+upd(patch) { const kids = this.state.kids.map((k, i) => i === this.state.kid ? Object.assign({}, k, patch) : k); this.save(kids[this.state.kid]); try { if (window.TK && window.TK.notif) window.TK.notif.sync(); } catch (e) {} this.setState({ kids }); }
 typed(key, v, lo, hi) { const p = /^(\d{1,2}):(\d{2})$/.exec(v || ''); if (!p) return; this.upd({ [key]: Math.max(lo, Math.min(hi, +p[1] * 60 + +p[2])) }); }
 renderVals() {
 const s = this.state, k = s.kids[s.kid];
@@ -114,13 +115,13 @@ nm: s.nm, msg: s.msg, askDel: s.askDel, noAsk: !s.askDel,
 setNm: (e) => this.setState({ nm: e.target.value, msg: '' }),
 gBoy: () => this.setState({ g: 'boy' }), gGirl: () => this.setState({ g: 'girl' }),
 gBoyStyle: seg(s.g === 'boy'), gGirlStyle: seg(s.g === 'girl'),
-saveKid: () => { const T = window.TK, n = (s.nm || '').trim(); if (!n) { this.setState({ msg: 'اكتبوا اسم الطفل' }); return; } if (T && k.id !== 'demo') { T.updateKid(k.id, n, s.g); T.go('Parent.dc.html?k=' + encodeURIComponent(k.id)); } },
+saveKid: () => { const T = window.TK, n = (s.nm || '').trim(); if (!n) { this.setState({ msg: 'اكتبوا اسم الطفل' }); return; } if (T && k.id !== 'demo') { T.updateKid(k.id, n, s.g); this.syncGo('Parent.dc.html?k=' + encodeURIComponent(k.id)); } },
 askDelete: () => this.setState({ askDel: true }),
 noDelete: () => this.setState({ askDel: false }),
-doDelete: () => { const T = window.TK; if (T && k.id !== 'demo') { T.delKid(k.id); T.go(T.acct() && T.acct().kids.length ? 'Parent.dc.html' : 'Start.dc.html?skip=1'); } },
+doDelete: () => { const T = window.TK; if (T && k.id !== 'demo') { T.delKid(k.id); this.syncGo(T.acct() && T.acct().kids.length ? 'Parent.dc.html' : 'Start.dc.html?skip=1'); } },
 banner: s.banner,
 bannerText: 'صباح الخير يا ' + k.name + '! أذكارك مستنياك',
-test: () => { try { const A = (window.TK_AUDIO || {})[k.girl ? 'girl' : 'boy'], u = A && A.alert; if (u && k.sound !== 'off') { const au = new Audio(u); au.play().catch(() => {}); } } catch (e) {} this.setState({ banner: false }); setTimeout(() => this.setState({ banner: true }), 30); setTimeout(() => this.setState({ banner: false }), 3700); }
+test: () => { try { const A = (window.TK_AUDIO || {})[k.girl ? 'girl' : 'boy'], u = A && A.alerts; if (u && k.sound !== 'off') { const au = new Audio(u); au.play().catch(() => {}); } } catch (e) {} this.setState({ banner: false }); setTimeout(() => this.setState({ banner: true }), 30); setTimeout(() => this.setState({ banner: false }), 3700); }
 };
 }
 }

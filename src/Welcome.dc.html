@@ -28,25 +28,26 @@ input{font-family:inherit}
 <div style="font-size:26px;font-weight:700;margin-top:14px;text-align:center;animation:{{greetAnim}}">{{greeting}}</div>
 <div style="font-size:15px;font-weight:600;margin-top:6px;text-align:center">رحلة ممتعة نتعلّم فيها أذكار الصباح والمساء</div>
 <div style="width:100%;margin-top:26px">
-<label for="kidname" style="display:block;font-size:15px;font-weight:700;margin-bottom:8px">ما اسمك؟</label>
-<input id="kidname" type="text" placeholder="اكتب اسمك هنا" onInput="{{setName}}" style="width:100%;box-sizing:border-box;height:56px;border-radius:18px;border:3px solid #FFC93C;background:#fff;padding:0 16px;font-size:20px;font-weight:600;color:#1F2A5A">
+<label for="kidname" style="display:block;font-size:15px;font-weight:700;margin-bottom:8px">اسم الطفل</label>
+<input id="kidname" type="text" placeholder="اكتب الاسم هنا" onInput="{{setName}}" style="width:100%;box-sizing:border-box;height:56px;border-radius:18px;border:3px solid #FFC93C;background:#fff;padding:0 16px;font-size:20px;font-weight:600;color:#1F2A5A">
+<div style="min-height:20px;margin-top:6px;font-size:13px;font-weight:700;color:#B3261E">{{nameErr}}</div>
 </div>
 <div style="width:100%;margin-top:22px">
-<div style="font-size:15px;font-weight:700;margin-bottom:8px">اختر شخصيتك</div>
+<div style="font-size:15px;font-weight:700;margin-bottom:8px">النوع</div>
 <div style="display:flex;gap:12px">
 <button aria-label="ولد" onClick="{{pickBoy}}" style="{{styleBoy}}"><svg width="72" height="72" viewBox="0 0 64 64" role="img" aria-label="ولد"><circle cx="32" cy="32" r="30" fill="#FFE08A" stroke="#E39A00" stroke-width="3"/><path d="M14 56q0-12 18-12t18 12a30 30 0 0 1-36 0z" fill="#20B2A6"/><rect x="28" y="40" width="8" height="8" rx="3" fill="#E8A97E"/><ellipse cx="32" cy="29" rx="14" ry="15" fill="#F5C6A0"/><path d="M17 27q-1-16 15-16t15 16q-6-9-15-9t-15 9z" fill="#3B2A20"/><circle cx="26" cy="31" r="2.6" fill="#1F2A5A"/><circle cx="38" cy="31" r="2.6" fill="#1F2A5A"/><path d="M26 38q6 6 12 0" fill="none" stroke="#1F2A5A" stroke-width="2.6" stroke-linecap="round"/><circle cx="22" cy="36" r="3" fill="#FF8FB1" opacity=".7"/><circle cx="42" cy="36" r="3" fill="#FF8FB1" opacity=".7"/></svg><span style="font-size:18px;font-weight:700">ولد</span></button>
 <button aria-label="بنت" onClick="{{pickGirl}}" style="{{styleGirl}}"><svg width="72" height="72" viewBox="0 0 64 64" role="img" aria-label="بنت"><circle cx="32" cy="32" r="30" fill="#FFD3E4" stroke="#E0629A" stroke-width="3"/><path d="M14 56q0-12 18-12t18 12a30 30 0 0 1-36 0z" fill="#7B5CFF"/><rect x="28" y="40" width="8" height="8" rx="3" fill="#E8A97E"/><path d="M15 30q-3-20 17-20t17 20v12q-4 3-6 0V28H21v14q-2 3-6 0z" fill="#3B2A20"/><ellipse cx="32" cy="30" rx="13" ry="14" fill="#F5C6A0"/><path d="M19 26q1-10 13-10t13 10q-6-5-13-5t-13 5z" fill="#3B2A20"/><circle cx="26" cy="32" r="2.6" fill="#1F2A5A"/><circle cx="38" cy="32" r="2.6" fill="#1F2A5A"/><path d="M26 38q6 6 12 0" fill="none" stroke="#1F2A5A" stroke-width="2.6" stroke-linecap="round"/><circle cx="22" cy="37" r="3" fill="#FF8FB1" opacity=".7"/><circle cx="42" cy="37" r="3" fill="#FF8FB1" opacity=".7"/><path d="M40 12l5-4 1 7zM40 12l-5-4-1 7z" fill="#FF6FA5"/></svg><span style="font-size:18px;font-weight:700">بنت</span></button>
 </div>
 </div>
-<sc-if value="{{idle}}" hint-placeholder-val="{{ true }}"><button onClick="{{start}}" style="position:absolute;left:20px;right:20px;bottom:44px;height:60px;border-radius:30px;border:0;background:#FF8A3D;box-shadow:0 5px 0 #D86A1F;color:#1F2A5A;font-size:20px;font-weight:700">ابدأ المغامرة</button></sc-if>
-<sc-if value="{{celebrating}}" hint-placeholder-val="{{ false }}"><a id="gostart" href="{{goHref}}" style="position:absolute;left:20px;right:20px;bottom:44px;height:60px;border-radius:30px;background:#20B2A6;box-shadow:0 5px 0 #138A80;color:#1F2A5A;font-size:20px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;animation:pulse .7s ease-in-out infinite">هيا بنا!</a></sc-if>
+<sc-if value="{{idle}}" hint-placeholder-val="{{ true }}"><button onClick="{{start}}" style="position:absolute;left:20px;right:20px;bottom:44px;height:60px;border-radius:30px;border:0;background:#FF8A3D;box-shadow:0 5px 0 #D86A1F;color:#1F2A5A;font-size:20px;font-weight:700">حفظ الطفل</button></sc-if>
+<sc-if value="{{celebrating}}" hint-placeholder-val="{{ false }}"><a id="gostart" href="Start.dc.html?skip=1" style="position:absolute;left:20px;right:20px;bottom:44px;height:60px;border-radius:30px;background:#20B2A6;box-shadow:0 5px 0 #138A80;color:#1F2A5A;font-size:19px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;z-index:5">عرض حسابات الأطفال</a></sc-if><sc-if value="{{canAddMore}}" hint-placeholder-val="{{ false }}"><a href="Welcome.dc.html" style="position:absolute;left:20px;right:20px;bottom:114px;height:52px;border-radius:26px;background:#fff;border:3px solid #FF8A3D;color:#1F2A5A;font-size:17px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;z-index:5">+ إضافة طفل آخر</a></sc-if>
 <sc-if value="{{celebrating}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:0;right:0;top:0;height:844px;pointer-events:none;overflow:hidden"><sc-for list="{{confetti}}" as="c" hint-placeholder-count="3"><i style="{{c.style}}"></i></sc-for></div></sc-if>
 <div style="position:absolute;bottom:14px;font-size:12px;font-weight:600">حساب طفلك سيرتبط بحساب الأهل ويتابعونه منه</div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
-constructor(p) { super(p); this.state = { name: '', who: 'boy', n: 0, celebrating: false }; }
+constructor(p) { super(p); this.state = { name: '', who: 'boy', n: 0, celebrating: false, nameErr: '' }; const T = window.TK; if (T && !T.acct()) setTimeout(() => T.go('Start.dc.html?skip=1'), 0); }
 renderVals() {
 const s = this.state;
 const st = (on) => 'flex:1;min-height:132px;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#1F2A5A;background:' + (on ? '#FFE08A' : '#fff') + ';border:4px solid ' + (on ? '#FF8A3D' : '#C9D3F0');
@@ -55,12 +56,12 @@ greeting: s.celebrating ? 'مرحبًا بك' + (s.name.trim() ? ' يا ' + s.na
 idle: !s.celebrating, celebrating: s.celebrating,
 greetAnim: s.celebrating ? 'pulse .6s ease-in-out infinite' : 'none',
 confetti: Array.from({length: 24}, (_, i) => ({ style: 'position:absolute;top:0;left:' + ((i * 37) % 100) + '%;width:' + (10 + (i % 3) * 4) + 'px;height:' + (14 + (i % 2) * 6) + 'px;border-radius:' + (i % 2 ? '50%' : '3px') + ';background:' + ['#FF8A3D','#FFC93C','#7B5CFF','#20B2A6','#FF6FA5'][i % 5] + ';animation:fall ' + (1.6 + (i % 5) * 0.25) + 's linear ' + ((i % 8) * 0.12) + 's infinite' })),
-goHref: s.who === 'girl' ? 'MainGirl.dc.html' : 'Main.dc.html',
-start: () => { try { const nm = s.name.trim(); if (nm) window.localStorage.setItem('tk_name_' + s.who, nm); } catch (e) {} this.setState({ celebrating: true }); setTimeout(() => { try { document.getElementById('gostart').click(); } catch (e) {} }, 2200); },
+canAddMore: s.celebrating && (!window.TK || !window.TK.acct() || window.TK.acct().kids.length < 6), nameErr: s.nameErr,
+start: () => { const nm = s.name.trim(), T = window.TK; if (!nm) { this.setState({ nameErr: 'اكتبوا اسم الطفل أولًا' }); return; } if (T && T.acct() && T.acct().kids.length >= 6) { this.setState({ nameErr: 'وصلتم للحد الأقصى: ٦ أطفال' }); return; } try { if (T) T.addKid(nm, s.who); } catch (e) {} this.setState({ celebrating: true, nameErr: '' }); },
 isBoy: s.who === 'boy', isGirl: s.who === 'girl',
 hopAnim: s.celebrating ? 'cheer .8s ease-in-out infinite' : s.n ? 'hop' + (s.n % 2) + ' .5s ease-out' : 'none',
 styleBoy: st(s.who === 'boy'), styleGirl: st(s.who === 'girl'),
-setName: (e) => this.setState({ name: e.target.value }),
+setName: (e) => this.setState({ name: e.target.value, nameErr: '' }),
 pickBoy: () => this.setState({ who: 'boy', n: s.n + 1 }),
 pickGirl: () => this.setState({ who: 'girl', n: s.n + 1 })
 };

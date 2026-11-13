@@ -18,7 +18,7 @@ button{font-family:inherit;cursor:pointer}
 </style>
 </helmet>
 <div dir="rtl" style="width:390px;height:844px;box-sizing:border-box;background:#EEF3FF;font-family:'Noto Sans Arabic',Arial,sans-serif;color:#1F2A5A;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;padding:0 20px">
-<a href="Who.dc.html" aria-label="رجوع" style="position:absolute;top:56px;right:20px;width:44px;height:44px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#1F2A5A;font-size:22px;font-weight:700">›</a>
+<a href="Start.dc.html?skip=1" aria-label="رجوع" style="position:absolute;top:56px;right:20px;width:44px;height:44px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#1F2A5A;font-size:22px;font-weight:700">›</a>
 <div style="margin-top:96px;width:76px;height:76px;border-radius:38px;background:#fff;display:flex;align-items:center;justify-content:center"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#1F2A5A" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
 <div style="font-size:26px;font-weight:700;margin-top:16px">للأهل فقط</div>
 <div style="font-size:14px;font-weight:600;margin-top:6px;text-align:center;color:#44507F">اكتبوا الرقم السري لفتح منطقة الأهل</div>
@@ -31,13 +31,14 @@ button{font-family:inherit;cursor:pointer}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
-constructor(p) { super(p); this.state = { pin: '', status: 'idle' }; }
+constructor(p) { super(p); this.state = { pin: '', status: 'idle' }; const T = window.TK; if (T && !T.acct()) setTimeout(() => T.go('Start.dc.html?skip=1'), 0); }
+len() { const T = window.TK, a = T && T.acct(); return a ? a.len : 4; }
 press(d) {
 const s = this.state;
 if (s.status !== 'idle') return;
-const pin = (d === 'del') ? s.pin.slice(0, -1) : (s.pin.length < 4 ? s.pin + d : s.pin);
-if (pin.length === 4) {
-if (pin === '1234') {
+const pin = (d === 'del') ? s.pin.slice(0, -1) : (s.pin.length < this.len() ? s.pin + d : s.pin);
+if (pin.length === this.len()) {
+if (window.TK && window.TK.checkPin(pin)) {
 this.setState({ pin, status: 'ok' });
 setTimeout(() => { try { document.getElementById('gopin').click(); } catch (e) {} }, 900);
 } else {
@@ -53,7 +54,7 @@ const col = s.status === 'error' ? '#D64545' : (s.status === 'ok' ? '#20B2A6' : 
 const keyStyle = 'width:72px;height:72px;border-radius:36px;border:0;background:#fff;font-size:28px;font-weight:700;color:#1F2A5A';
 const order = ['1','2','3','4','5','6','7','8','9','','0','del'];
 return {
-dots: [0,1,2,3].map((i) => ({ style: 'width:22px;height:22px;border-radius:11px;box-sizing:border-box;border:3px solid ' + (i < s.pin.length ? col : '#9AA3C7') + ';background:' + (i < s.pin.length ? col : 'transparent') })),
+dots: Array.from({ length: this.len() }, (_, i) => i).map((i) => ({ style: 'width:22px;height:22px;border-radius:11px;box-sizing:border-box;border:3px solid ' + (i < s.pin.length ? col : '#9AA3C7') + ';background:' + (i < s.pin.length ? col : 'transparent') })),
 dotsAnim: s.status === 'error' ? 'shake .5s ease-in-out' : 'none',
 msg: s.status === 'error' ? 'الرقم غير صحيح، حاولوا مرة أخرى' : (s.status === 'ok' ? 'أهلًا بكم' : ''),
 msgColor: s.status === 'error' ? '#B3261E' : '#0F6E66',

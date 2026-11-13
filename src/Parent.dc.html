@@ -45,34 +45,48 @@ button{font-family:inherit;cursor:pointer}
 <div style="display:flex;gap:8px"><button onClick="{{soundSoft}}" style="{{softStyle}}">هادئة</button><button onClick="{{soundFun}}" style="{{funStyle}}">مرحة</button><button onClick="{{soundOff}}" style="{{offStyle}}">بدون صوت</button></div>
 <div style="font-size:12px;color:#44507F;margin-top:10px">حد أقصى ٣ تنبيهات يوميًا · لا تنبيهات بعد الساعة ٩ مساءً</div>
 </div>
+<a href="Start.dc.html?skip=1" style="display:flex;align-items:center;justify-content:center;margin:12px 20px 0;height:48px;border-radius:24px;background:#fff;border:3px solid #C9D3F0;color:#1F2A5A;font-size:15px;font-weight:700;text-decoration:none">العودة إلى حسابات الأطفال</a>
 <button onClick="{{test}}" style="margin:14px 20px 0;height:56px;border-radius:28px;border:0;background:#FF8A3D;box-shadow:0 5px 0 #D86A1F;color:#1F2A5A;font-size:18px;font-weight:700">جرّب التنبيه الآن</button>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":920}}'>
 class Component extends DCLogic {
-constructor(p) { super(p); this.state = { kid: 0, banner: false, kids: [
-{ name: 'يوسف', girl: false, streak: 5, week: 32, days: ['d','d','d','d','d','t','f'], am: true, pm: true, amT: 390, pmT: 990, sound: 'soft' },
-{ name: 'سلمى', girl: true, streak: 3, week: 18, days: ['d','d','d','m','m','t','f'], am: true, pm: false, amT: 420, pmT: 1020, sound: 'fun' } ] };  try { this.state.kids.forEach((k) => { if (!window.localStorage.getItem('tk_times_' + (k.girl ? 'girl' : 'boy'))) this.save(k); else { const t = JSON.parse(window.localStorage.getItem('tk_times_' + (k.girl ? 'girl' : 'boy'))); if (t.amT) k.amT = t.amT; if (t.pmT) k.pmT = t.pmT; } }); } catch (e) {} }
+constructor(p) { super(p);
+const T = window.TK, acct = T ? T.acct() : null;
+if (T && !acct) setTimeout(() => T.go('Start.dc.html?skip=1'), 0);
+const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const kids = (acct ? acct.kids : []).map((kd) => {
+let db = null, tm = null; try { db = JSON.parse(window.localStorage.getItem('tk_db_' + kd.id)); } catch (e) {} try { tm = JSON.parse(window.localStorage.getItem('tk_times_' + kd.id)); } catch (e) {}
+const st = db && db.s ? db.s : {}, hist = st.hist || [], byDay = {};
+hist.forEach((h) => { byDay[h.d] = Math.max(byDay[h.d] || 0, h.st || 0); });
+const days = [], now = new Date(); let week = 0;
+for (let i = 6; i >= 0; i--) { const d = new Date(now.getTime() - i * 864e5), key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); const n = byDay[key] || (i === 0 && st.dayDate === key ? (st.progress || 0) + (st.alt || 0) : 0); week += n; days.push({ wd: d.getDay(), st: i === 0 ? (n > 0 ? 'd' : 't') : (n > 0 ? 'd' : 'm') }); }
+let streak = 0; for (let i = days.length - 1; i >= 0; i--) { if (days[i].st === 'd') streak++; else if (i === days.length - 1) continue; else break; }
+return { id: kd.id, name: kd.name, girl: kd.g === 'girl', streak, week, days, am: true, pm: true, amT: tm && tm.amT ? tm.amT : 390, pmT: tm && tm.pmT ? tm.pmT : 900, sound: 'soft' };
+});
+if (!kids.length) kids.push({ id: 'demo', name: 'طفل', girl: false, streak: 0, week: 0, days: [0, 1, 2, 3, 4, 5, 6].map((i) => ({ wd: i, st: 'm' })), am: true, pm: true, amT: 390, pmT: 900, sound: 'soft' });
+this.state = { kid: 0, banner: false, kids };
+}
 ar(n) { return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); }
 hm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
-save(k) { try { window.localStorage.setItem('tk_times_' + (k.girl ? 'girl' : 'boy'), JSON.stringify({ amT: k.amT, pmT: k.pmT })); } catch (e) {} }
+save(k) { try { if (k.id !== 'demo') window.localStorage.setItem('tk_times_' + k.id, JSON.stringify({ amT: k.amT, pmT: k.pmT })); } catch (e) {} }
 upd(patch) { const kids = this.state.kids.map((k, i) => i === this.state.kid ? Object.assign({}, k, patch) : k); this.save(kids[this.state.kid]); this.setState({ kids }); }
 typed(key, v, lo, hi) { const p = /^(\d{1,2}):(\d{2})$/.exec(v || ''); if (!p) return; this.upd({ [key]: Math.max(lo, Math.min(hi, +p[1] * 60 + +p[2])) }); }
 renderVals() {
 const s = this.state, k = s.kids[s.kid];
-let lv = null; try { lv = JSON.parse(window.localStorage.getItem('tk_live_' + (k.girl ? 'girl' : 'boy'))); } catch (e) {}
+let lv = null; try { lv = JSON.parse(window.localStorage.getItem('tk_live_' + k.id)); } catch (e) {}
 const seg = (on) => 'flex:1;min-height:44px;border-radius:22px;border:3px solid ' + (on ? '#FF8A3D' : '#C9D3F0') + ';background:' + (on ? '#FFE08A' : '#fff') + ';font-size:15px;font-weight:700;color:#1F2A5A';
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-const letters = ['س','ح','ن','ث','ر','خ','ج'];
+const letters = ['ح','ن','ث','ر','خ','ج','س'];
 const dayStyle = { d: 'background:#FFC93C', t: 'border:3px solid #FF8A3D;box-sizing:border-box;background:#fff', f: 'border:3px dashed #9AA3C7;box-sizing:border-box', m: 'background:#C9D3F0' };
 return {
 kids: s.kids.map((c, i) => ({ name: c.name, initial: c.name[0], sel: i === s.kid,
 pick: () => this.setState({ kid: i }),
 style: 'height:48px;padding:0 14px 0 8px;border-radius:24px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#1F2A5A;box-sizing:border-box;background:' + (i === s.kid ? '#FFE08A' : '#fff') + ';border:3px solid ' + (i === s.kid ? '#FF8A3D' : '#C9D3F0'),
 dot: 'width:30px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:15px;background:' + (c.girl ? '#FF6FA5' : '#FFC93C') })),
-backHref: k.girl ? 'MainGirl.dc.html' : 'Main.dc.html', kidName: k.name, isBoy: !k.girl, isGirl: k.girl,
-streakText: this.ar(k.streak) + ' أيام متتالية' + (lv ? ' · المستوى ' + this.ar(lv.level) + ' · اليوم ' + this.ar(lv.day) + ' من ٤' : ''), weekCount: this.ar(k.week),
-days: k.days.map((d, i) => ({ label: letters[i], style: 'width:26px;height:26px;border-radius:13px;' + dayStyle[d] })),
+backHref: k.id === 'demo' ? 'Start.dc.html?skip=1' : (k.girl ? 'MainGirl.html' : 'Main.html') + '?k=' + encodeURIComponent(k.id), kidName: k.name, isBoy: !k.girl, isGirl: k.girl,
+streakText: (k.streak ? this.ar(k.streak) + ' أيام متتالية' : 'لم يبدأ سلسلة بعد') + (lv ? ' · المستوى ' + this.ar(lv.level) + ' · اليوم ' + this.ar(lv.day) + ' من ٤' : ''), weekCount: this.ar(k.week),
+days: k.days.map((d) => ({ label: letters[d.wd], style: 'width:26px;height:26px;border-radius:13px;' + dayStyle[d.st] })),
 amOn: k.am, amLabel: 'تنبيه الصباح', amSw: 'width:56px;height:32px;border-radius:16px;display:flex;align-items:center;padding:3px;box-sizing:border-box;background:' + (k.am ? '#20B2A6' : '#9AA3C7') + ';justify-content:' + (k.am ? 'flex-end' : 'flex-start'), amOp: k.am ? 1 : 0.55, amVal: this.hm(k.amT),
 amType: (e) => this.typed('amT', e.target.value, 240, 600),
 amToggle: () => this.upd({ am: !k.am }),

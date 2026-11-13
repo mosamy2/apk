@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<title>حساب الأهل</title>
+<title>سبحة الأبطال</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -12,32 +12,67 @@
 <style>
 body{margin:0}
 button{font-family:inherit;cursor:pointer}
-input{font-family:inherit}
+a{-webkit-tap-highlight-color:transparent}
+@keyframes twinkle{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+@keyframes sentIn{0%{opacity:0;transform:scale(.88);filter:blur(6px)}100%{opacity:1;transform:scale(1);filter:blur(0)}}
+@keyframes glowGold{0%,100%{text-shadow:0 0 14px rgba(255,214,90,.55),0 2px 0 rgba(0,0,0,.25)}50%{text-shadow:0 0 28px rgba(255,214,90,.95),0 2px 0 rgba(0,0,0,.25)}}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(24px)}100%{opacity:1;transform:translateY(0)}}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@media (prefers-reduced-motion: reduce){*{animation:none !important}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
 </style>
 </helmet>
-<div dir="rtl" style="width:390px;height:844px;box-sizing:border-box;background:#EEF3FF;font-family:'Noto Sans Arabic',Arial,sans-serif;color:#1F2A5A;display:flex;flex-direction:column;position:relative;overflow:hidden;padding:0 20px">
-<div style="margin-top:60px;display:flex;align-items:center;gap:12px"><svg width="60" height="60" viewBox="0 0 64 64" role="img" aria-label="شعار سبحة الأبطال"><rect width="64" height="64" rx="16" fill="#FFE08A"/><circle cx="32.0" cy="10.0" r="4.6" fill="#7B5CFF" stroke="#fff" stroke-width="1"/><circle cx="43.0" cy="12.9" r="4.6" fill="#FF6FA5" stroke="#fff" stroke-width="1"/><circle cx="51.1" cy="21.0" r="4.6" fill="#20B2A6" stroke="#fff" stroke-width="1"/><circle cx="54.0" cy="32.0" r="4.6" fill="#FF8A3D" stroke="#fff" stroke-width="1"/><circle cx="51.1" cy="43.0" r="4.6" fill="#7B5CFF" stroke="#fff" stroke-width="1"/><circle cx="43.0" cy="51.1" r="4.6" fill="#FF6FA5" stroke="#fff" stroke-width="1"/><circle cx="32.0" cy="54.0" r="4.6" fill="#20B2A6" stroke="#fff" stroke-width="1"/><circle cx="21.0" cy="51.1" r="4.6" fill="#FF8A3D" stroke="#fff" stroke-width="1"/><circle cx="12.9" cy="43.0" r="4.6" fill="#7B5CFF" stroke="#fff" stroke-width="1"/><circle cx="10.0" cy="32.0" r="4.6" fill="#FF6FA5" stroke="#fff" stroke-width="1"/><circle cx="12.9" cy="21.0" r="4.6" fill="#20B2A6" stroke="#fff" stroke-width="1"/><circle cx="21.0" cy="12.9" r="4.6" fill="#FF8A3D" stroke="#fff" stroke-width="1"/><path d="M32 18l4.4 9.6 10.4 1.2-7.8 7 2.2 10.2L32 40.4l-9.2 5.6 2.2-10.2-7.8-7 10.4-1.2z" fill="#FF8A3D" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg><div><div style="font-size:26px;font-weight:700">{{title}}</div><div style="font-size:13px;color:#44507F">{{sub}}</div></div></div>
-<div style="display:flex;gap:8px;margin-top:20px"><button onClick="{{goSignup}}" style="{{goSignupStyle}}">حساب جديد</button><button onClick="{{goLogin}}" style="{{goLoginStyle}}">تسجيل دخول</button></div>
-<div style="margin-top:14px"><label for="em" style="display:block;font-size:14px;font-weight:700;margin-bottom:6px">البريد الإلكتروني أو رقم الجوال</label><input id="em" type="text" inputmode="email" placeholder="name@example.com" style="width:100%;box-sizing:border-box;height:52px;border-radius:16px;border:3px solid #FFC93C;background:#fff;padding:0 16px;font-size:17px;font-weight:600;color:#1F2A5A"></div>
-<div style="margin-top:14px"><label for="pw" style="display:block;font-size:14px;font-weight:700;margin-bottom:6px">كلمة المرور</label><input id="pw" type="password" placeholder="••••••••"  style="width:100%;box-sizing:border-box;height:52px;border-radius:16px;border:3px solid #FFC93C;background:#fff;padding:0 16px;font-size:17px;font-weight:600;color:#1F2A5A"></div>
-<sc-if value="{{isSignup}}" hint-placeholder-val="{{ true }}"><div style="margin-top:14px"><label for="pin" style="display:block;font-size:14px;font-weight:700;margin-bottom:6px">رقم سري للأهل (٤ أرقام)</label><input id="pin" type="password" placeholder="••••" inputmode="numeric" maxlength="4" style="width:100%;box-sizing:border-box;height:52px;border-radius:16px;border:3px solid #FFC93C;background:#fff;padding:0 16px;font-size:17px;font-weight:600;color:#1F2A5A"></div><div style="margin-top:10px"><div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;margin-top:8px"><i style="width:22px;height:22px;border-radius:11px;background:#FFC93C;flex:none"></i>حساب خاص لكل طفل: تقدّمه ونجومه وتنبيهاته</div><div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;margin-top:8px"><i style="width:22px;height:22px;border-radius:11px;background:#20B2A6;flex:none"></i>تتابعون كل أطفالكم من حساب واحد</div><div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;margin-top:8px"><i style="width:22px;height:22px;border-radius:11px;background:#FF6FA5;flex:none"></i>الرقم السري يحمي إعدادات الأهل من الأطفال</div></div></sc-if>
-<sc-if value="{{isSignup}}" hint-placeholder-val="{{ true }}"><a href="Welcome.dc.html" style="position:absolute;left:20px;right:20px;bottom:44px;height:60px;border-radius:30px;background:#FF8A3D;box-shadow:0 5px 0 #D86A1F;color:#1F2A5A;font-size:19px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center">إنشاء الحساب وإضافة طفل</a></sc-if>
-<sc-if value="{{isLogin}}" hint-placeholder-val="{{ false }}"><a href="Who.dc.html" style="position:absolute;left:20px;right:20px;bottom:44px;height:60px;border-radius:30px;background:#FF8A3D;box-shadow:0 5px 0 #D86A1F;color:#1F2A5A;font-size:19px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center">دخول</a></sc-if>
+<div dir="rtl" style="width:390px;height:844px;box-sizing:border-box;background:linear-gradient(180deg,#241C6B 0%,#4B33B8 52%,#8A6FE6 100%);font-family:'Noto Sans Arabic',Arial,sans-serif;color:#fff;position:relative;overflow:hidden">
+<sc-for list="{{stars}}" as="z" hint-placeholder-count="20"><i style="{{z.style}}"></i></sc-for>
+<div style="position:absolute;left:276px;top:70px;filter:drop-shadow(0 0 16px rgba(255,236,150,.85))"><svg width="84" height="84" viewBox="0 0 84 84" aria-hidden="true"><path d="M58 8a34 34 0 1 0 18 52a28 28 0 1 1-18-52z" fill="#FFE98A"/><circle cx="36" cy="40" r="3" fill="#E8C95A"/><circle cx="46" cy="58" r="4" fill="#E8C95A"/></svg></div>
+<svg width="390" height="190" viewBox="0 0 390 190" style="position:absolute;left:0;top:654px" aria-hidden="true"><path d="M0 70 C 80 20 170 30 250 66 C 310 92 350 50 390 60 L390 190 L0 190z" fill="#33268F"/><path d="M0 120 C 100 80 220 100 390 90 L390 190 L0 190z" fill="#291E78"/><g transform="translate(300 20)"><rect x="12" y="40" width="50" height="40" rx="3" fill="#5A47C4"/><path d="M8 42a29 29 0 0 1 58 0z" fill="#6D59DA"/><rect x="35" y="-6" width="4" height="12" rx="2" fill="#E8C95A"/><circle cx="37" cy="8" r="4" fill="#E8C95A"/><rect x="70" y="16" width="9" height="64" rx="3" fill="#5A47C4"/><path d="M68 18a6.5 6.5 0 0 1 13 0z" fill="#6D59DA"/><rect x="26" y="52" width="10" height="16" rx="5" fill="#FFE08A"/><rect x="40" y="52" width="10" height="16" rx="5" fill="#FFE08A"/></g></svg>
+<sc-if value="{{ready}}" hint-placeholder-val="{{ true }}"><div style="{{bodyStyle}}">
+<sc-if value="{{noAcct}}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:120px;padding:0 28px">
+<div style="animation:bob 2.6s ease-in-out infinite;filter:drop-shadow(0 10px 8px rgba(0,0,0,.3))"><svg width="84" height="84" viewBox="0 0 64 64" role="img" aria-label="شعار سبحة الأبطال"><rect width="64" height="64" rx="16" fill="#FFE08A"/><circle cx="32.0" cy="10.0" r="4.6" fill="#7B5CFF" stroke="#fff" stroke-width="1"/><circle cx="43.0" cy="12.9" r="4.6" fill="#FF6FA5" stroke="#fff" stroke-width="1"/><circle cx="51.1" cy="21.0" r="4.6" fill="#20B2A6" stroke="#fff" stroke-width="1"/><circle cx="54.0" cy="32.0" r="4.6" fill="#FF8A3D" stroke="#fff" stroke-width="1"/><circle cx="51.1" cy="43.0" r="4.6" fill="#7B5CFF" stroke="#fff" stroke-width="1"/><circle cx="43.0" cy="51.1" r="4.6" fill="#FF6FA5" stroke="#fff" stroke-width="1"/><circle cx="32.0" cy="54.0" r="4.6" fill="#20B2A6" stroke="#fff" stroke-width="1"/><circle cx="21.0" cy="51.1" r="4.6" fill="#FF8A3D" stroke="#fff" stroke-width="1"/><circle cx="12.9" cy="43.0" r="4.6" fill="#7B5CFF" stroke="#fff" stroke-width="1"/><circle cx="10.0" cy="32.0" r="4.6" fill="#FF6FA5" stroke="#fff" stroke-width="1"/><circle cx="12.9" cy="21.0" r="4.6" fill="#20B2A6" stroke="#fff" stroke-width="1"/><circle cx="21.0" cy="12.9" r="4.6" fill="#FF8A3D" stroke="#fff" stroke-width="1"/><path d="M32 18l4.4 9.6 10.4 1.2-7.8 7 2.2 10.2L32 40.4l-9.2 5.6 2.2-10.2-7.8-7 10.4-1.2z" fill="#FF8A3D" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+<div style="font-size:34px;font-weight:700;margin-top:18px">سبحة الأبطال</div>
+<div style="font-size:16px;font-weight:600;margin-top:10px;line-height:1.7;color:#E6E0FF">رحلة ممتعة يتعلّم فيها طفلك أذكار الصباح والمساء</div>
+</div></sc-if>
+<sc-if value="{{hasKids}}" hint-placeholder-val="{{ false }}"><div style="padding:64px 20px 0">
+<div style="font-size:30px;font-weight:700;text-align:center">من سيسبّح اليوم؟</div>
+<div style="font-size:15px;font-weight:600;margin-top:6px;text-align:center;color:#E6E0FF">اضغط على صورتك لتبدأ</div>
+<div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:22px;max-height:430px;overflow:auto;padding:4px 0 8px">
+<sc-for list="{{kids}}" as="k" hint-placeholder-count="2"><a href="{{k.href}}" aria-label="{{k.name}}" style="{{k.card}}"><span style="animation:bob 2.4s ease-in-out infinite;display:flex"><sc-if value="{{k.isBoy}}" hint-placeholder-val="{{ true }}"><svg width="78" height="78" viewBox="0 0 64 64" role="img" aria-label="ولد"><circle cx="32" cy="32" r="30" fill="#FFE08A" stroke="#E39A00" stroke-width="3"/><path d="M14 56q0-12 18-12t18 12a30 30 0 0 1-36 0z" fill="#20B2A6"/><rect x="28" y="40" width="8" height="8" rx="3" fill="#E8A97E"/><ellipse cx="32" cy="29" rx="14" ry="15" fill="#F5C6A0"/><path d="M17 27q-1-16 15-16t15 16q-6-9-15-9t-15 9z" fill="#3B2A20"/><circle cx="26" cy="31" r="2.6" fill="#1F2A5A"/><circle cx="38" cy="31" r="2.6" fill="#1F2A5A"/><path d="M26 38q6 6 12 0" fill="none" stroke="#1F2A5A" stroke-width="2.6" stroke-linecap="round"/><circle cx="22" cy="36" r="3" fill="#FF8FB1" opacity=".7"/><circle cx="42" cy="36" r="3" fill="#FF8FB1" opacity=".7"/></svg></sc-if><sc-if value="{{k.isGirl}}" hint-placeholder-val="{{ false }}"><svg width="78" height="78" viewBox="0 0 64 64" role="img" aria-label="بنت"><circle cx="32" cy="32" r="30" fill="#FFD3E4" stroke="#E0629A" stroke-width="3"/><path d="M14 56q0-12 18-12t18 12a30 30 0 0 1-36 0z" fill="#7B5CFF"/><rect x="28" y="40" width="8" height="8" rx="3" fill="#E8A97E"/><path d="M15 30q-3-20 17-20t17 20v12q-4 3-6 0V28H21v14q-2 3-6 0z" fill="#3B2A20"/><ellipse cx="32" cy="30" rx="13" ry="14" fill="#F5C6A0"/><path d="M19 26q1-10 13-10t13 10q-6-5-13-5t-13 5z" fill="#3B2A20"/><circle cx="26" cy="32" r="2.6" fill="#1F2A5A"/><circle cx="38" cy="32" r="2.6" fill="#1F2A5A"/><path d="M26 38q6 6 12 0" fill="none" stroke="#1F2A5A" stroke-width="2.6" stroke-linecap="round"/><circle cx="22" cy="37" r="3" fill="#FF8FB1" opacity=".7"/><circle cx="42" cy="37" r="3" fill="#FF8FB1" opacity=".7"/><path d="M40 12l5-4 1 7zM40 12l-5-4-1 7z" fill="#FF6FA5"/></svg></sc-if></span><span style="font-size:22px;font-weight:700;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{k.name}}</span><span style="font-size:13px;font-weight:600;color:#44507F">{{k.sub}}</span></a></sc-for>
+</div></div></sc-if>
+<sc-if value="{{noKids}}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:150px;padding:0 28px"><div style="font-size:60px;animation:bob 2.4s ease-in-out infinite">🧒</div><div style="font-size:24px;font-weight:700;margin-top:10px">لم تُضف أي طفل بعد</div><div style="font-size:15px;font-weight:600;margin-top:8px;color:#E6E0FF">أضيفوا طفلكم الأول ليبدأ رحلته</div></div></sc-if>
+</div></sc-if>
+<sc-if value="{{showCreate}}" hint-placeholder-val="{{ true }}"><a href="Signup.dc.html" style="position:absolute;left:24px;right:24px;bottom:116px;height:62px;border-radius:31px;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.55) 0,rgba(255,255,255,0) 45%),#FF8A3D;box-shadow:0 7px 0 #C8621F,0 14px 16px rgba(0,0,0,.3);color:#1F2A5A;font-size:21px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;animation:fadeUp .7s .5s ease-out both">إنشاء حساب</a></sc-if>
+<sc-if value="{{showAddFirst}}" hint-placeholder-val="{{ false }}"><a href="Welcome.dc.html" style="position:absolute;left:24px;right:24px;bottom:116px;height:62px;border-radius:31px;background:#FF8A3D;box-shadow:0 7px 0 #C8621F;color:#1F2A5A;font-size:21px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center">إضافة طفل</a></sc-if>
+<sc-if value="{{showParent}}" hint-placeholder-val="{{ false }}"><a href="Pin.dc.html" style="position:absolute;left:24px;right:24px;bottom:106px;height:50px;border-radius:25px;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.5);color:#fff;font-size:16px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;animation:fadeUp .7s .5s ease-out both">🔒 منطقة الأهل</a></sc-if>
+<div style="{{sentStyle}}">هذا التطبيق صدقة عن روح والدي رحمه الله</div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
-constructor(p) { super(p); this.state = { mode: 'signup' }; }
+constructor(p) {
+super(p);
+const T = window.TK, skip = !!(T && T.qs('skip'));
+this.state = { phase: skip ? 'ready' : 'intro' };
+if (!skip) setTimeout(() => this.setState({ phase: 'ready' }), 2000);
+}
+ar(n) { return String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]); }
 renderVals() {
-const m = this.state.mode;
-const st = (on) => 'flex:1;min-height:48px;border-radius:24px;font-size:16px;font-weight:700;color:#1F2A5A;background:' + (on ? '#FFE08A' : '#fff') + ';border:3px solid ' + (on ? '#FF8A3D' : '#C9D3F0');
-return { isSignup: m === 'signup', isLogin: m === 'login',
-title: m === 'signup' ? 'حساب الأهل' : 'أهلًا بعودتكم',
-sub: m === 'signup' ? 'ينشئه الأب أو الأم مرة واحدة' : 'ادخلوا لتروا أطفالكم',
-goSignupStyle: st(m === 'signup'), goLoginStyle: st(m === 'login'),
-goSignup: () => this.setState({ mode: 'signup' }), goLogin: () => this.setState({ mode: 'login' }) };
+const s = this.state, T = window.TK, a = T ? T.acct() : null, ready = s.phase === 'ready';
+const kids = a ? a.kids : [];
+const sentBase = 'position:absolute;left:0;right:0;margin:0 auto;width:340px;text-align:center;color:#FFE08A;font-weight:700;line-height:1.55;transition:top 1.1s cubic-bezier(.65,0,.25,1),font-size 1.1s cubic-bezier(.65,0,.25,1),opacity .6s;z-index:5;';
+return {
+ready, noAcct: !a, hasKids: !!a && kids.length > 0, noKids: !!a && kids.length === 0,
+showCreate: ready && !a, showAddFirst: ready && !!a && kids.length === 0, showParent: ready && !!a && kids.length > 0,
+sentStyle: sentBase + (ready ? 'top:772px;font-size:15px;opacity:.9' : 'top:330px;font-size:34px;animation:sentIn 1s ease-out both,glowGold 2s ease-in-out infinite'),
+bodyStyle: 'position:absolute;left:0;top:0;width:390px;height:844px;animation:fadeUp .8s .35s ease-out both',
+stars: Array.from({ length: 20 }, (_, i) => ({ style: 'position:absolute;left:' + ((i * 61 + 23) % 372) + 'px;top:' + (30 + (i * 43) % 560) + 'px;width:' + (3 + (i % 3) * 2) + 'px;height:' + (3 + (i % 3) * 2) + 'px;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px rgba(255,255,255,.8);animation:twinkle ' + (1.8 + (i % 4) * 0.5) + 's ease-in-out ' + ((i % 5) * 0.3) + 's infinite' })),
+kids: kids.map((k) => {
+let lv = null; try { lv = JSON.parse(window.localStorage.getItem('tk_live_' + k.id)); } catch (e) {}
+return { name: k.name, isBoy: k.g !== 'girl', isGirl: k.g === 'girl', href: T.kidHref(k),
+sub: lv ? 'المستوى ' + this.ar(lv.level) + ' · ⭐ ' + this.ar(lv.stars) : 'ابدأ الرحلة',
+card: 'width:160px;height:200px;box-sizing:border-box;border-radius:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-decoration:none;color:#1F2A5A;box-shadow:0 7px 0 rgba(0,0,0,.28),0 14px 16px rgba(0,0,0,.25);border:4px solid #fff;background:' + (k.g === 'girl' ? 'radial-gradient(circle at 30% 20%,rgba(255,255,255,.7) 0,rgba(255,255,255,0) 50%),#FFC2DA' : 'radial-gradient(circle at 30% 20%,rgba(255,255,255,.7) 0,rgba(255,255,255,0) 50%),#FFE08A') };
+})
+};
 }
 }
 </script>

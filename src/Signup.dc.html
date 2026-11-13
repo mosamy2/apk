@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>إنشاء حساب الأهل</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap">
+<style>
+body{margin:0}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important}}
+</style>
+</helmet>
+<div dir="rtl" style="width:390px;height:844px;box-sizing:border-box;background:#EEF3FF;font-family:'Noto Sans Arabic',Arial,sans-serif;color:#1F2A5A;position:relative;overflow:hidden;padding:0 24px"><a href="Start.dc.html?skip=1" aria-label="رجوع" style="position:absolute;top:56px;right:20px;width:44px;height:44px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#1F2A5A;font-size:26px;font-weight:700">›</a><div style="margin-top:112px;font-size:28px;font-weight:700">إنشاء حساب الأهل</div><div style="font-size:14px;font-weight:600;margin-top:6px;color:#44507F;line-height:1.7">ينشئه الأب أو الأم مرة واحدة، والرقم السري هو مفتاح «منطقة الأهل»</div><div style="margin-top:16px"><label for="ph" style="display:block;font-size:14px;font-weight:700;margin-bottom:6px">رقم الجوال</label><input id="ph" type="tel" inputmode="tel" maxlength="16" placeholder="01XXXXXXXXX" autocomplete="off" onInput="{{phIn}}" style="width:100%;box-sizing:border-box;height:56px;border-radius:18px;border:3px solid #FFC93C;background:#fff;padding:0 16px;font-size:20px;font-weight:600;color:#1F2A5A;letter-spacing:normal"></div><div style="margin-top:16px"><label for="p1" style="display:block;font-size:14px;font-weight:700;margin-bottom:6px">الرقم السري (٤ أو ٦ أرقام)</label><input id="p1" type="password" inputmode="numeric" maxlength="6" placeholder="••••" autocomplete="off" onInput="{{p1In}}" style="width:100%;box-sizing:border-box;height:56px;border-radius:18px;border:3px solid #FFC93C;background:#fff;padding:0 16px;font-size:20px;font-weight:600;color:#1F2A5A;letter-spacing:6px"></div><div style="margin-top:16px"><label for="p2" style="display:block;font-size:14px;font-weight:700;margin-bottom:6px">أعيدوا كتابة الرقم السري</label><input id="p2" type="password" inputmode="numeric" maxlength="6" placeholder="••••" autocomplete="off" onInput="{{p2In}}" style="width:100%;box-sizing:border-box;height:56px;border-radius:18px;border:3px solid #FFC93C;background:#fff;padding:0 16px;font-size:20px;font-weight:600;color:#1F2A5A;letter-spacing:6px"></div><div style="min-height:24px;margin-top:12px;font-size:14px;font-weight:700;color:#B3261E;animation:{{errAnim}}">{{err}}</div><div style="margin-top:6px;font-size:12px;font-weight:600;color:#596392;line-height:1.7">احفظوا الرقم السري جيدًا. لو نسيتموه تكتبون رقم الجوال نفسه لتختاروا رقمًا جديدًا.</div><button onClick="{{create}}" style="position:absolute;left:24px;right:24px;bottom:44px;height:60px;border-radius:30px;border:0;background:#20B2A6;box-shadow:0 5px 0 #138A80;color:#1F2A5A;font-size:19px;font-weight:700">إنشاء الحساب</button></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { ph: '', p1: '', p2: '', err: '', n: 0 }; const T = window.TK; if (T && T.acct()) setTimeout(() => T.go('Start.dc.html?skip=1'), 0); }
+renderVals() {
+const s = this.state, T = window.TK;
+return {
+err: s.err, errAnim: s.err && s.n ? 'shake .45s ease-in-out' : 'none',
+phIn: (e) => this.setState({ ph: e.target.value, err: '' }),
+p1In: (e) => this.setState({ p1: e.target.value, err: '' }),
+p2In: (e) => this.setState({ p2: e.target.value, err: '' }),
+create: () => {
+if (!T) return;
+const phone = T.phone(s.ph), p1 = T.pinOk(s.p1), p2 = T.nz(s.p2).trim();
+if (!phone) return this.setState({ err: 'اكتبوا رقم جوال صحيحًا (٨ إلى ١٥ رقمًا)', n: s.n + 1 });
+if (!p1) return this.setState({ err: 'الرقم السري يجب أن يكون ٤ أو ٦ أرقام', n: s.n + 1 });
+if (p1 !== p2) return this.setState({ err: 'الرقمان السريان غير متطابقين', n: s.n + 1 });
+T.create(phone, p1);
+T.go('Welcome.dc.html?first=1');
+}
+};
+}
+}
+</script>
+</body>
+</html>

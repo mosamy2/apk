@@ -1,0 +1,272 @@
+# Warid Changelog
+
+This changelog records every meaningful change to the application — features, bug fixes, internal improvements, and release notes — in reverse chronological order (newest first).
+
+**Format:** Each release section lists what was Added, Changed, or Fixed. Where the reason behind a change is not obvious, a brief Problem/Solution note explains it.
+
+---
+
+## [v1.1.7] — 2026-09-25
+
+### Fixed
+
+> The macOS overlay, full-screen and microphone fixes below were contributed by [@Ziad-Maslooh](https://github.com/Ziad-Maslooh) in [PR #7](https://github.com/MohamedMaslooh/Warid/pull/7).
+
+#### macOS — the recording bar sat inside a dark box
+- **Problem:** The floating control bar was drawn inside an opaque dark rectangle. On macOS a window's `transparent` setting does nothing unless Tauri's private macOS API is enabled.
+- **Solution:** Enabled `macOSPrivateApi` (and the matching `macos-private-api` Tauri feature), and cleared the page background inside the overlay only. (`src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`, `src/components/recording/ControlBar.tsx`)
+
+#### macOS — the hotkey did nothing over another app in full screen
+- **Problem:** Over another app's full-screen Space the overlay never appeared, and the hotkey only started recording after leaving full screen. The overlay was an ordinary window that could not join that Space, and while Warid's own window was hidden, minimized or covered, WebKit paused the page and held back the microphone request until the window was visible again. Warid also minimized itself after every paste, which paused it again.
+- **Solution:** On macOS the overlay is now a non-activating panel that joins every Space, full-screen ones included, and shows without stealing focus. Both windows are kept active while hidden (background throttling, occlusion detection and "mic needs focus" are turned off). After a transcription Warid now minimizes itself only if its own window had focus. (`src-tauri/src/lib.rs`, `src/lib/overlayWindow.ts`)
+
+#### The microphone indicator stayed on
+- **Problem:** Cancelling or re-pressing the hotkey while the microphone request was still pending could leave a live microphone stream behind, so the system mic indicator stayed on.
+- **Solution:** Each recording start is now tracked, so a start that was cancelled or replaced closes its own stream, and stopping before the microphone is ready cancels cleanly instead of producing an empty recording. This fix applies on every platform. (`src/lib/audio.ts`, `src/components/recording/Recorder.tsx`)
+
+#### macOS — muffled or ducked microphone audio
+- WebKit's voice processing (echo cancellation, noise suppression, automatic gain) is now turned off for the microphone on macOS, which stops the ducking and muffling. Windows and Linux keep their default settings. Very quiet microphones may now record at a lower level. (`src/lib/audio.ts`)
+
+### Changed
+
+- **The update banner now lays out "What's new" properly.** Release notes are shown as grouped sections with titles and bullet points instead of raw text in a small box, with a "Show all changes" toggle for longer notes. (`src/components/layout/UpdateBanner.tsx`, `src/lib/releaseNotes.ts`)
+- **macOS: you may need to allow Accessibility again after this update** before auto-paste works (System Settings → Privacy & Security → Accessibility). macOS ties that permission to the app's signature, which changes with each release.
+
+---
+
+## [v1.1.6] — 2026-09-05
+
+### Added
+
+#### Google's new Gemini models
+- Added the newly released **Gemini 3.5 Flash Lite** (15 req/min · 500 req/day) and **Gemini 3.8 / 3.7 / 3.6 Flash** (5 req/min · 20 req/day each) to the model list, with the free-tier limits Google actually publishes for them. The three new Flash models are available through OpenRouter too (`google/gemini-3.8-flash`, `google/gemini-3.7-flash`, `google/gemini-3.6-flash`).
+- **Gemini 3.5 Flash Lite is the new head of the Auto chain**, followed by Gemini 3.1 Flash Lite — the two Lite models carry 500 requests/day each, so ordinary use now almost never reaches a 20/day model. Behind them come the regular Flash models newest-first (3.8 → 3.7 → 3.6 → 3.5), then Gemini 3 Flash Preview, Gemini 2.5 Flash and Gemini 2.5 Flash Lite. (`src/lib/gemini.ts`)
+
+#### The Auto order is now yours to arrange
+- Settings → Models has a new **Auto model order** panel: move any model up or down the fallback chain, drop one out of it, add it back, or reset to the app's default order. Choosing one specific model for everything (or for a single command) works exactly as before. (`src/components/settings/SettingsPage.tsx`, `src/types/index.ts`)
+- The saved order is stored as a plain list of model ids and sanitised on load, so an order saved today keeps working after a future release retires or renames a model — and an untouched order automatically picks up whatever models ship next.
+
+### Fixed
+
+#### A per-minute rate limit benched a model for three hours
+- **Problem:** Every "high demand" response — an overloaded server *and* an ordinary rate limit alike — put the model in a flat 3-hour cooldown. The new Flash models allow only 5 requests per minute, so a short burst of dictation could bench four models for the rest of the afternoon over a limit that clears in seconds.
+- **Solution:** The cooldown is now chosen from the error itself: Google's own `retryDelay` when it sends one (usually well under a minute), one minute for a rate limit with no hint, until the day rolls over for a spent daily quota, and the original 3 hours only for a genuine overload or a stalled stream. (`src/lib/gemini.ts`)
+
+#### Auto now steps around a model *before* it rate-limits
+- Requests are counted in a rolling 60-second window per model, and Auto passes over any model already at its per-minute cap instead of spending a request to discover it. Models that are merely throttled stay ahead of models that are out of quota for the day, and nothing is ever hard-excluded — every tier is still tried as a last resort. (`src/lib/gemini.ts`, `src/stores/requestTrackerStore.ts`)
+
+#### A model the app no longer ships failed instead of falling back
+- A command (or a saved setting) pointing at a model id that is no longer in the app — retired between releases — used to fail the request outright. It now logs the reason and runs through the Auto chain instead. (`src/lib/gemini.ts`)
+
+### Changed
+
+- **Model cards show both limits.** Each free model now displays its per-minute allowance next to its daily one, so the difference between a 500/day Lite model and a 20/day Flash model is visible at a glance. (`src/components/settings/SettingsPage.tsx`)
+- **Gemini 3.5 Flash's per-minute limit corrected** from 10 to 5, matching Google's published free-tier figure.
+- **Milestone summaries in Analytics** now run on Gemini 3.5 Flash Lite, and fall back through Gemini 3.1 Flash Lite and Gemini 2.5 Flash Lite instead of giving up when one model is out of quota. The model that produced each summary is recorded with it. (`src/lib/analyticsAI.ts`, `src/stores/analyticsStore.ts`)
+
+---
+
+## [v1.1.5] — 2026-06-21
+
+### Added
+
+#### Update banner now shows "What's new"
+- When an update is available (or downloaded and waiting to install), the update banner now displays the release notes for the new version, so users can see *what changed* instead of only being told that an update exists.
+- The notes are sourced automatically: the release workflow extracts this changelog's section for the tag and writes it to both the GitHub release body and the `notes` field of `latest.json`, which the app reads via the updater. (`src/components/layout/UpdateBanner.tsx`, `src/stores/updateStore.ts`, `.github/workflows/release.yml`)
+
+### Fixed
+
+> The macOS crash and microphone-permission fixes below were contributed by [@draelwakeel](https://github.com/draelwakeel) in [PR #2](https://github.com/MohamedMaslooh/Warid/pull/2).
+
+#### macOS — crash on auto-paste (off-main-thread Text Input Source call)
+- **Problem:** On macOS 14+ the app crashed (`EXC_BREAKPOINT`/`SIGTRAP`) every time it finished a transcription and tried to paste at the cursor. `enigo`'s `Key::Unicode('v')` resolves the character against the active keyboard layout via the Carbon Text Input Source API (`TSMGetInputSourceProperty`), which aborts the process when called off the main thread — and the paste runs inside `spawn_blocking`.
+- **Solution:** On macOS, inject the V key by hardware keycode (`Key::Other(9)` = `kVK_ANSI_V`), which passes straight through without any Text Input Source lookup. Linux keeps the original `Key::Unicode('v')` path (the abort is macOS-only). (PR #2 by @draelwakeel, `src-tauri/src/lib.rs`)
+
+#### macOS — microphone permission missing on clean installs
+- **Problem:** The bundle shipped without `NSMicrophoneUsageDescription`, so a fresh install never prompted for microphone access and `navigator.mediaDevices` was unavailable.
+- **Solution:** Added `Info.plist` (mic usage string) plus `Entitlements.plist` (audio-input / microphone entitlements) and referenced them from `tauri.conf.json`. (PR #2 by @draelwakeel)
+
+#### macOS — auto-paste used the wrong shortcut
+- Auto-paste now sends **⌘V** (Command) on macOS instead of Ctrl+V, matching the platform's paste shortcut. Other platforms continue to use Ctrl+V. (`src-tauri/src/lib.rs`)
+
+### Changed
+
+- **macOS keyboard shortcuts** are now displayed using native glyphs (⌃ ⌥ ⇧ ⌘) in Apple's canonical order, matching how shortcuts appear in other Mac apps. Windows/Linux still show `Ctrl`, `Alt`, etc. (`src/lib/hotkey.ts`)
+- **Default "Transcribe" prompt** rewritten for Arabic/English code-switching: it now explicitly keeps Arabic in Arabic and English words/terms in English, and forbids translation, notes, or preamble. Existing users still on a previous built-in default are migrated forward automatically; custom-edited prompts are never overwritten. (`src/types/index.ts`, `src/lib/db.ts`)
+
+---
+
+## [v1.1.4] — 2026-06-20
+
+### Fixed
+
+#### macOS — "Warid is damaged and can't be opened"
+
+- **Problem:** The macOS app was built and released without any code signature. On Apple Silicon, an app with a missing or invalid (linker-only) signature is rejected by Gatekeeper, and on macOS 15 (Sequoia) / 26 (Tahoe) — which enforce this strictly — the download failed on first launch with *"Warid is damaged and can't be opened."* The bundle contents were intact; only the signature was the problem.
+- **Solution:** Configured the bundler to **ad-hoc sign the app on every release** (`bundle.macOS.signingIdentity: "-"` in `tauri.conf.json`), so each build ships with a valid, consistent signature. This removes the dead-end "damaged" error; downloaders now get the standard, recoverable "unverified developer" prompt instead.
+
+### Changed
+
+- Documented the macOS first-launch unlock steps on the README and download page (EN/AR), including the reliable `xattr -cr /Applications/Warid.app` command — right-click → Open was removed in macOS 15 and later.
+
+> Note: a fully seamless launch with no prompt at all still requires an Apple Developer ID certificate + notarization (paid Apple Developer account). Ad-hoc signing is the best free option and fixes the "damaged" failure for everyone.
+
+---
+
+## [v1.1.3] — 2026-06-12
+
+### Fixed
+
+#### Auto-Paste — Intermittent Failure Regardless of Keyboard Layout
+
+- **Problem:** Auto-paste failed unpredictably. Restarting the app would temporarily restore it, but it would break again after normal use — regardless of whether the keyboard layout was Arabic or English. Two separate bugs combined to produce this:
+
+  1. **Blocked event loop (primary cause of intermittent failure).** `paste_at_cursor` was a synchronous Tauri command, which means it ran on the app's main event-loop thread. The routine calls `window.minimize()` to move Warid out of the way and then immediately checks whether a non-Warid window has taken the foreground — but the minimize *itself* is dispatched on the same event loop that the command was blocking. The minimize never executed until after the command returned, so the safety check always saw Warid still in front and silently aborted without pasting. After a fresh restart Warid's window was already hidden in the tray, bypassing the minimize entirely, so paste worked — until the main window or overlay was brought to the foreground again through normal use.
+
+  2. **Unreliable keystroke injection (secondary, layout-independent).** Ctrl+V was synthesised via `enigo`'s `Key::Unicode('v')`, which translates the character `'v'` through the currently active keyboard layout. Because `enigo` uses `VK_PACKET` for Unicode characters, some applications do not recognise it as the Ctrl+V paste accelerator. This could cause paste to land in the field as a literal character or be dropped entirely, independent of which layout was active.
+
+- **Solution:**
+  - Converted `paste_at_cursor` to an `async` command and moved the entire paste routine into a `spawn_blocking` worker thread (`src-tauri/src/lib.rs`). The event loop now stays free, so `window.minimize()` executes while the background thread waits for the focus handoff.
+  - Replaced `enigo` entirely on Windows with a direct Win32 `SendInput` call using virtual-key codes (`VK_CONTROL` + `VK_V`) rather than Unicode characters. VK codes are what applications match Ctrl+V accelerators against; they are keyboard-layout-independent and always produce the standard paste shortcut.
+  - The four key events (Ctrl-down, V-down, V-up, Ctrl-up) are submitted in a single `SendInput` batch so no real user input can interleave mid-chord.
+  - Replaced the fixed 80 ms focus-wait sleep with a polling loop (up to 600 ms) that re-issues the `AttachThreadInput` + `SetForegroundWindow` + `SetFocus` sequence on every tick until a non-Warid window actually holds the foreground, rather than firing once and hoping.
+  - Added a held-modifier guard: any Ctrl/Shift/Alt/Win key still physically pressed (e.g., from the stop-recording hotkey) is waited out and then force-released before Ctrl+V is injected, preventing the chord from being interpreted as Ctrl+Shift+V or similar.
+  - The command now returns `Result<(), String>` so genuine failures (no target window found, focus never transferred, input blocked by UIPI) are logged in Warid's log panel with an actual reason instead of falsely reporting "pasted". (`src-tauri/src/lib.rs`)
+  - Removed `enigo` from Windows dependencies; it is still used as the non-Windows fallback.
+
+---
+
+## [v1.1.2] — 2026-06-02
+
+### Added
+
+#### In-App Automatic Updates
+- Integrated `tauri-plugin-updater` and `tauri-plugin-process` (Rust + JS) so Warid can check for, download, and install new releases entirely from within the app.
+- On startup the app silently checks GitHub Releases for a newer version. When one is found, a toast banner appears with a **Download** button.
+  - Clicking **Download** shows a live progress bar. After the download completes, a **Restart to install** button appears. The app then installs the update and relaunches into the new version.
+- **Auto-download mode** (Settings → About, off by default): downloads the update silently in the background, then shows only the "Update ready — Restart to install" prompt.
+- Added a manual **Check for updates** button in Settings → About so users can check on demand rather than only at launch.
+- Restart to install is blocked while a recording or processing job is in progress — the button is disabled with a "Finish recording first" label until the session ends.
+- Release CI (`.github/workflows/release.yml`) now passes `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` to `tauri-action` so every release artifact is signed and a `latest.json` manifest is generated automatically.
+- CSP widened in `tauri.conf.json` to allow connections to `github.com` and `*.githubusercontent.com` (required for the in-app download).
+- New `autoDownloadUpdates` setting (persisted, default `false`).
+- New `src/stores/updateStore.ts` — shared Zustand store that drives the update phase (idle → checking → available → downloading → ready → error) across the banner and the Settings button.
+- Added `src/vite-env.d.ts` so `import.meta.env` is correctly typed throughout the project.
+- New i18n strings (AR + EN) for all update phases and the new Settings controls.
+
+#### What's New Dialog — Combined 1.1.0–1.1.2
+- Replaced the single-version What's New dialog with a combined view that shows every user-facing change across 1.1.0, 1.1.1, and 1.1.2 at once (since the 1.1.1 release never reached users).
+- New `seenWhatsNew112` settings flag gates the dialog; dismissing it also marks `seenWhatsNew111` so it does not show twice.
+
+### Changed
+- `src/lib/updateCheck.ts` rewritten: removed the manual GitHub API fetch and `isNewer()` helper; replaced with thin wrappers around the plugin's `check()`, `download()`, `install()`, and `relaunch()` APIs.
+  - **Why:** The plugin handles version comparison and cryptographic signature verification internally. Keeping both approaches would create two conflicting sources of truth.
+  - Download and install are deliberately kept **separate** (not the combined `downloadAndInstall()`) so the restart prompt is always explicit. On Windows, `install()` runs the NSIS installer which closes the process — using the combined form would cause the app to restart mid-download without warning, bypassing the "Restart to install" button entirely.
+- `src/components/layout/UpdateBanner.tsx` reworked from a static "visit website" link into a stateful component driven by the update store (phases: available / downloading / ready / error).
+- Version bumped to **1.1.2** in `package.json` and `src-tauri/tauri.conf.json`.
+
+---
+
+## [v1.1.1] — 2026-06-02
+
+### Fixed
+- **What's New dialog not showing for fresh installs.**
+  - **Problem:** The `seenWhatsNew111` flag defaulted to `false` for new users, but the guard condition in `App.tsx` used the old `seenWhatsNew110` key, so new installs launched without seeing the dialog at all.
+  - **Solution:** Corrected the flag name to `seenWhatsNew111` and updated `DEFAULT_SETTINGS` accordingly so both upgraders and new installs see the dialog exactly once.
+- Minor overlay control-bar polish: improved pause/resume state rendering and timer display in `ControlBar.tsx`.
+- Added CSS for the overlay capsule's animated pulse indicator (`src/styles/index.css`).
+
+---
+
+## [v1.1.0] — 2026-06-02
+
+### Added
+
+#### Floating Recording Capsule (Overlay)
+- Added a persistent floating control bar that appears at the bottom of the screen during recording. It shows live status, a running timer, and pause/resume/stop/cancel controls, and stays on top of all other windows so users never need to switch back to Warid to manage a recording.
+- The capsule is driven by a second Tauri window (`overlay`, transparent, always-on-top) that communicates with the main window over Tauri events (`recording:state`, `overlay:<cmd>`).
+- New **Floating Bar** setting (Settings → Preferences) with three modes:
+  - **During recording** (default) — capsule appears only while a recording is active.
+  - **Always visible** — capsule stays on screen as a quick-launch mic button.
+  - **Off** — capsule is never shown.
+- Added `src/lib/overlayWindow.ts` (show/hide/state push), `src/lib/overlayCommands.ts` (module-scoped command dispatch so overlay events work from any route).
+- Added `src/components/recording/ControlBar.tsx` — the overlay window's UI component.
+
+#### What's New Dialog
+- Added a one-time "What's New" modal (`src/components/onboarding/WhatsNew.tsx`) that shows on first launch after upgrading, explaining the new floating capsule and its settings.
+
+### Changed
+
+#### Templates Page — Save Button & Dirty State
+- **Problem:** The Save button was buried at the bottom of the editing form with no indication of whether unsaved changes existed. Toggling favorites or deleting templates could leave the editor in an inconsistent state.
+- **Solution:** Moved Save to the page header; added `isDirty` tracking (`editing !== original`) to enable/disable it dynamically; relocated "New Template" to the bottom of the sidebar list; fixed favorite/delete actions to correctly reset `original` and `editing` state. (`src/components/templates/TemplatesPage.tsx`)
+
+#### Recorder — Resize Handler & History Refresh
+- **Problem:** The waveform visualizer's canvas did not always resize correctly when recording state changed mid-session, and newly completed transcriptions did not appear in History without a manual refresh.
+- **Solution:** Added `rs.state` to the resize-handler `useEffect` dependency array; added `useHistoryStore.getState().load()` immediately after successful transcription. (`src/components/recording/Recorder.tsx`)
+
+#### Sidebar Tooltips — Portal Rendering & RTL
+- **Problem:** Sidebar tooltips were clipped by the parent container's `overflow: hidden` and did not position correctly in RTL layout.
+- **Solution:** Rendered tooltips into `document.body` via React Portal; applied `zIndex: 9999` and backdrop blur; used `translateX(-100%)` offset when `isRTL` is true. (`src/components/layout/Sidebar.tsx`)
+
+#### Select Dropdown — Viewport-Aware Placement
+- **Problem:** The custom Select popover opened downward unconditionally, clipping off-screen on small windows (most visible in Settings when the language selector was near the bottom of the viewport).
+- **Solution:** Added viewport space detection before rendering; if space below the trigger is less than 190 px and space above is greater, the popover opens upward instead. (`src/components/ui/Select.tsx`)
+
+### Fixed
+- Removed unused `Mic` import from `ControlBar.tsx` that was causing TypeScript strict-mode build errors.
+
+---
+
+## [v1.0.1] — 2026-05-31
+
+### Fixed
+
+#### Launch on Startup — Registry Entry Not Saved
+- **Problem:** Toggling "Launch on Startup" in Settings appeared to work but the registry entry was never written, so the setting was lost after a restart.
+- **Solution:** Rewrote `src/lib/autostart.ts` to call the Tauri autostart plugin synchronously on save. Added a one-time self-heal (guarded by `autostartHealed` flag) that re-applies the registry entry for users who already had the setting enabled, without requiring them to toggle it manually. (`src-tauri/src/lib.rs`, `src/App.tsx`, `src/lib/autostart.ts`)
+
+#### Paste-at-Cursor — Wrong Window Targeted on Windows
+- **Problem:** After stopping a recording and auto-pasting the transcript, Ctrl+V was sometimes sent to Warid's own overlay window instead of the user's foreground application.
+- **Solution:** Reworked `paste_at_cursor` in `lib.rs` to resolve all Warid-owned HWNDs (main + overlay) and explicitly exclude them when choosing the paste target. Used `AttachThreadInput` to bypass Windows' `SetForegroundWindow` lock. (`src-tauri/src/lib.rs`)
+
+---
+
+## [v1.0.0] — 2026-05-30
+
+### Added
+
+#### Auto Model Selection
+- Added an **Auto** model mode that cycles through available free Gemini models in order of capability, falling back to the next if a quota is exhausted. Users no longer need to manually switch models when hitting daily limits. (`src/lib/gemini.ts`, `src/components/settings/SettingsPage.tsx`)
+- Per-model daily usage bars shown in Settings → Models.
+- One-time migration: existing users are silently moved to Auto mode on first launch after upgrade (guarded by `autoModeMigrated` flag).
+
+#### PDF Export
+- Added clean PDF export of transcription results via `jsPDF`. (`src/lib/pdfExporter.ts`)
+- "Save as PDF" button added to the transcript result view.
+
+#### Tag-Based Release Workflow
+- Replaced the push-to-main CI trigger with a tag-based trigger (`v*`). Releases are now only published when a version tag is pushed, keeping the main branch build-only and the GitHub Releases page clean.
+- Added a two-stage workflow: all platform builds create a draft release, then a final `publish-release` job flips it public only if every platform build succeeded.
+
+### Changed
+- Warid brand logo applied to all app icons across all platforms and sizes. (`src-tauri/icons/`)
+- Global transcribe hotkey changed from `Ctrl+Shift+R` to `Ctrl+Alt+R` to avoid conflicts with common browser shortcuts.
+
+---
+
+## [v0.1.0] — 2026-05-22 (initial development build)
+
+### Added
+- Core application structure: Tauri 2 + React 18 + Vite + TypeScript + Zustand + TailwindCSS.
+- Audio recording via browser MediaRecorder API; waveform visualizer canvas.
+- Transcription pipeline: Gemini API (Google AI Studio) + OpenRouter fallback.
+- Template system: create, edit, favourite, and delete prompt templates; per-template global hotkeys.
+- History: SQLite-backed transcript storage with search and delete.
+- Analytics: word count stats, daily activity heatmap, milestone celebrations.
+- Settings: API key management, model selection, theme (light/dark/system), UI language (AR/EN), audio device picker.
+- Onboarding flow for first-run API key setup.
+- System tray with show/quit menu; tray labels update when UI language changes.
+- Auto-paste: after transcription, Ctrl+V is sent to the previously active window.
+- GitHub Actions workflow for multi-platform builds (Windows, macOS arm64/x64, Linux).
+- Project landing page at `https://mohamedmaslooh.github.io/Warid/`.

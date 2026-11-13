@@ -1,0 +1,97 @@
+name: Build Warid APK
+on:
+  push:
+    branches: [warid-android]
+    paths-ignore: ['README.md', 'build-logs/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: warid-apk
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+
+      - name: Install
+        run: npm ci 2>&1 | tee build.log
+      - name: Typecheck + web build (mobile flavour)
+        run: set -o pipefail; npm run build:mobile 2>&1 | tee -a build.log
+      - name: Add Android platform
+        run: set -o pipefail; npx cap add android 2>&1 | tee -a build.log
+
+      - name: Launcher icons
+        run: |
+          set -o pipefail
+          npm i --no-save @capacitor/assets 2>&1 | tail -2
+          npx capacitor-assets generate --android --iconBackgroundColor '#0A0A10' --splashBackgroundColor '#0A0A0F' 2>&1 | tee -a build.log
+
+      - name: Patch Android project (permissions, edge-to-edge)
+        run: |
+          python3 - <<'PY'
+          import re, pathlib
+          mf = pathlib.Path("android/app/src/main/AndroidManifest.xml")
+          s = mf.read_text()
+          perms = ['android.permission.RECORD_AUDIO', 'android.permission.MODIFY_AUDIO_SETTINGS']
+          add = "".join(f'<uses-permission android:name="{p}" />\n    ' for p in perms if p not in s)
+          s = s.replace("<application", add + "<application", 1)
+          if "android.hardware.microphone" not in s:
+              s = s.replace("<application", '<uses-feature android:name="android.hardware.microphone" android:required="false" />\n    <application', 1)
+          mf.write_text(s)
+          st = pathlib.Path("android/app/src/main/res/values/styles.xml")
+          t = st.read_text()
+          item = '<item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>'
+          if item not in t:
+              t = re.sub(r'(<style name="AppTheme\.NoActionBar"[^>]*>)', r'\1\n        ' + item, t, count=1)
+          st.write_text(t)
+          PY
+          grep -n "RECORD_AUDIO" android/app/src/main/AndroidManifest.xml
+
+      - name: Sync web assets
+        run: set -o pipefail; npx cap sync android 2>&1 | tee -a build.log
+
+      - name: Build debug APK
+        working-directory: android
+        run: |
+          set -o pipefail
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --console=plain 2>&1 | tee ../gradle.log
+
+      - name: Collect APK
+        run: |
+          mkdir -p out
+          cp android/app/build/outputs/apk/debug/app-debug.apk out/warid.apk
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: warid-apk
+          path: out/warid.apk
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete warid-latest --yes --cleanup-tag || true
+          gh release create warid-latest out/warid.apk --target "$GITHUB_SHA" --title "Warid for Android (debug APK)" --notes "Download warid.apk and install it on your phone. Built from commit $GITHUB_SHA."
+
+      - name: Save build log to branch (on failure)
+        if: failure()
+        run: |
+          mkdir -p /tmp/logs
+          tail -n 300 build.log > /tmp/logs/build.log 2>/dev/null || true
+          tail -n 300 gradle.log > /tmp/logs/gradle.log 2>/dev/null || true
+          git config user.name "build-bot"; git config user.email "bot@users.noreply.github.com"
+          git checkout --orphan build-logs
+          git rm -rf . >/dev/null 2>&1 || true
+          cp /tmp/logs/* . 2>/dev/null || true
+          git add build.log gradle.log 2>/dev/null || true
+          git commit -m "build logs for $GITHUB_SHA" || true
+          git push -f origin build-logs

@@ -1,0 +1,7 @@
+{
+  "appId": "app.warid.android",
+  "appName": "وارِد",
+  "webDir": "www",
+  "server": { "androidScheme": "https" },
+  "android": { "backgroundColor": "#0A0A0F", "allowMixedContent": false }
+}

@@ -17,7 +17,7 @@ button{font-family:inherit;cursor:pointer}
 @media (prefers-reduced-motion: reduce){*{animation:none !important}}
 </style>
 </helmet>
-<div dir="rtl" style="width:390px;height:1240px;box-sizing:border-box;background:#EEF3FF;font-family:'Noto Sans Arabic',Arial,sans-serif;color:#1F2A5A;display:flex;flex-direction:column;position:relative;overflow:hidden">
+<div dir="rtl" style="width:390px;height:1370px;box-sizing:border-box;background:#EEF3FF;font-family:'Noto Sans Arabic',Arial,sans-serif;color:#1F2A5A;display:flex;flex-direction:column;position:relative;overflow:hidden">
 <sc-if value="{{banner}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:12px;left:12px;right:12px;z-index:5;background:#fff;border:3px solid #FFC93C;border-radius:20px;padding:12px 14px;display:flex;align-items:center;gap:12px;animation:slideDown 3.6s ease-in-out forwards"><div style="width:44px;height:44px;border-radius:22px;background:#FF8A3D;display:flex;align-items:center;justify-content:center;animation:shake .8s ease-in-out 2"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></div><div><div style="font-size:12px;color:#44507F">هكذا سيظهر التنبيه لطفلك</div><div style="font-size:15px;font-weight:700">{{bannerText}}</div></div></div></sc-if>
 <div style="padding:56px 20px 8px;display:flex;align-items:center;gap:12px">
 <a href="{{backHref}}" aria-label="رجوع" style="width:44px;height:44px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#1F2A5A;font-size:22px;font-weight:700">›</a>
@@ -42,7 +42,9 @@ button{font-family:inherit;cursor:pointer}
 </div>
 <div style="margin:12px 20px 0;background:#fff;border-radius:22px;padding:12px 14px">
 <div style="font-size:15px;font-weight:700;margin-bottom:8px">نغمة التنبيه</div>
-<div style="display:flex;gap:8px"><button onClick="{{soundSoft}}" style="{{softStyle}}">هادئة</button><button onClick="{{soundFun}}" style="{{funStyle}}">مرحة</button><button onClick="{{soundOff}}" style="{{offStyle}}">بدون صوت</button></div>
+<div style="display:flex;gap:8px"><button onClick="{{soundFun}}" style="{{funStyle}}">مرحة 🎉</button><button onClick="{{soundSoft}}" style="{{softStyle}}">هادئة 🔔</button><button onClick="{{soundOff}}" style="{{offStyle}}">بدون صوت</button></div>
+<div style="font-size:12px;color:#44507F;margin-top:8px;line-height:1.6">{{toneHint}}</div>
+<div style="{{permBox}}"><div style="flex:1;font-size:13px;font-weight:700;line-height:1.6">{{permText}}</div><sc-if value="{{permBtn}}" hint-placeholder-val="{{ false }}"><button onClick="{{permGo}}" style="flex:none;height:40px;padding:0 14px;border-radius:20px;border:0;background:#7B5CFF;color:#fff;font-size:14px;font-weight:700">{{permBtnTxt}}</button></sc-if></div>
 <div style="font-size:12px;color:#44507F;margin-top:10px">حد أقصى ٣ تنبيهات يوميًا · لا تنبيهات بعد الساعة ٩ مساءً</div>
 </div>
 <div style="margin:12px 20px 0;background:#fff;border-radius:22px;padding:12px 14px">
@@ -57,9 +59,10 @@ button{font-family:inherit;cursor:pointer}
 </div>
 <a href="Start.dc.html?skip=1" style="display:flex;align-items:center;justify-content:center;margin:12px 20px 0;height:48px;border-radius:24px;background:#fff;border:3px solid #C9D3F0;color:#1F2A5A;font-size:15px;font-weight:700;text-decoration:none">العودة إلى حسابات الأطفال</a>
 <button onClick="{{test}}" style="margin:14px 20px 0;height:56px;border-radius:28px;border:0;background:#FF8A3D;box-shadow:0 5px 0 #D86A1F;color:#1F2A5A;font-size:18px;font-weight:700">جرّب التنبيه الآن</button>
+<div style="margin:8px 20px 0;align-self:stretch;text-align:center;font-size:13px;font-weight:700;color:#44507F;min-height:18px;line-height:1.6">{{testMsg}}</div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1240}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1370}}'>
 class Component extends DCLogic {
 constructor(p) { super(p);
 const T = window.TK, acct = T ? T.acct() : null;
@@ -72,16 +75,20 @@ hist.forEach((h) => { byDay[h.d] = Math.max(byDay[h.d] || 0, h.st || 0); });
 const days = [], now = new Date(); let week = 0;
 for (let i = 6; i >= 0; i--) { const d = new Date(now.getTime() - i * 864e5), key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); const n = byDay[key] || (i === 0 && st.dayDate === key ? (st.progress || 0) + (st.alt || 0) : 0); week += n; days.push({ wd: d.getDay(), st: i === 0 ? (n > 0 ? 'd' : 't') : (n > 0 ? 'd' : 'm') }); }
 let streak = 0; for (let i = days.length - 1; i >= 0; i--) { if (days[i].st === 'd') streak++; else if (i === days.length - 1) continue; else break; }
-return { id: kd.id, name: kd.name, girl: kd.g === 'girl', streak, week, days, am: !(tm && tm.am === false), pm: !(tm && tm.pm === false), amT: tm && tm.amT ? tm.amT : 390, pmT: tm && tm.pmT ? tm.pmT : 900, sound: tm && tm.sound ? tm.sound : 'soft' };
+return { id: kd.id, name: kd.name, girl: kd.g === 'girl', streak, week, days, am: !(tm && tm.am === false), pm: !(tm && tm.pm === false), amT: tm && tm.amT ? tm.amT : 390, pmT: tm && tm.pmT ? tm.pmT : 900, sound: T ? T.times(kd.id).sound : 'fun' };
 });
-if (!kids.length) kids.push({ id: 'demo', name: 'طفل', girl: false, streak: 0, week: 0, days: [0, 1, 2, 3, 4, 5, 6].map((i) => ({ wd: i, st: 'm' })), am: true, pm: true, amT: 390, pmT: 900, sound: 'soft' });
+if (!kids.length) kids.push({ id: 'demo', name: 'طفل', girl: false, streak: 0, week: 0, days: [0, 1, 2, 3, 4, 5, 6].map((i) => ({ wd: i, st: 'm' })), am: true, pm: true, amT: 390, pmT: 900, sound: 'fun' });
 const qk = T ? T.qs('k') : null, qi = Math.max(0, kids.findIndex((x) => x.id === qk));
-this.state = { kid: qi, banner: false, kids, nm: kids[qi].name, g: kids[qi].girl ? 'girl' : 'boy', msg: '', askDel: false };
+this.state = { kid: qi, banner: false, kids, nm: kids[qi].name, g: kids[qi].girl ? 'girl' : 'boy', msg: '', askDel: false, perm: '', exact: '', testMsg: '' };
+this.checkPerm();
+try { document.addEventListener('visibilitychange', () => { if (!document.hidden) this.checkPerm(); }); } catch (e) {}
 }
+checkPerm() { try { const N = window.TK && window.TK.notif; if (!N) return; N.status().then((perm) => { this.setState({ perm }); if (perm === 'granted') N.sync(); }); N.exact().then((exact) => this.setState({ exact })); } catch (e) {} }
+playTone(k) { try { if (this.au) this.au.pause(); } catch (e) {} try { const N = window.TK && window.TK.notif, u = N && N.toneUrl ? N.toneUrl(k.sound, k.girl) : null; if (u) { this.au = new Audio(u); this.au.play().catch(() => {}); } } catch (e) {} }
 syncGo(u) { const T = window.TK; let done = false; const go = () => { if (!done) { done = true; T.go(u); } }; try { T.notif.sync().then(go, go); setTimeout(go, 2500); } catch (e) { go(); } }
 ar(n) { return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); }
 hm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
-save(k) { try { if (k.id !== 'demo') window.localStorage.setItem('tk_times_' + k.id, JSON.stringify({ amT: k.amT, pmT: k.pmT, am: k.am, pm: k.pm, sound: k.sound })); } catch (e) {} }
+save(k) { try { if (k.id !== 'demo') window.localStorage.setItem('tk_times_' + k.id, JSON.stringify({ amT: k.amT, pmT: k.pmT, am: k.am, pm: k.pm, sound: k.sound, snd: k.sound })); } catch (e) {} }
 upd(patch) { const kids = this.state.kids.map((k, i) => i === this.state.kid ? Object.assign({}, k, patch) : k); this.save(kids[this.state.kid]); try { if (window.TK && window.TK.notif) window.TK.notif.sync(); } catch (e) {} this.setState({ kids }); }
 typed(key, v, lo, hi) { const p = /^(\d{1,2}):(\d{2})$/.exec(v || ''); if (!p) return; this.upd({ [key]: Math.max(lo, Math.min(hi, +p[1] * 60 + +p[2])) }); }
 renderVals() {
@@ -110,7 +117,14 @@ pmToggle: () => this.upd({ pm: !k.pm }),
 pmUp: () => this.upd({ pmT: clamp(k.pmT + 30, 900, 1200) }),
 pmDown: () => this.upd({ pmT: clamp(k.pmT - 30, 900, 1200) }),
 softStyle: seg(k.sound === 'soft'), funStyle: seg(k.sound === 'fun'), offStyle: seg(k.sound === 'off'),
-soundSoft: () => this.upd({ sound: 'soft' }), soundFun: () => this.upd({ sound: 'fun' }), soundOff: () => this.upd({ sound: 'off' }),
+soundSoft: () => { this.upd({ sound: 'soft' }); this.playTone(Object.assign({}, k, { sound: 'soft' })); }, soundFun: () => { this.upd({ sound: 'fun' }); this.playTone(Object.assign({}, k, { sound: 'fun' })); }, soundOff: () => { try { if (this.au) this.au.pause(); } catch (e) {} this.upd({ sound: 'off' }); },
+toneHint: k.sound === 'fun' ? 'المرحة (الأساسية): صوت ' + (k.girl ? 'البنت' : 'الولد') + ' ينادي ' + k.name + ' للأذكار' : (k.sound === 'soft' ? 'الهادئة: نغمة أجراس ناعمة وهادئة' : 'بدون صوت: يظهر الإشعار مع اهتزاز فقط'),
+permBox: s.perm === 'web' || !s.perm ? 'display:none' : 'display:flex;align-items:center;gap:10px;margin-top:10px;padding:10px 12px;border-radius:16px;background:' + (s.perm === 'granted' && s.exact !== 'denied' ? '#E3F7EF' : '#FFF1D6') + ';border:2px solid ' + (s.perm === 'granted' && s.exact !== 'denied' ? '#20B2A6' : '#FFC93C'),
+permText: s.perm === 'granted' ? (s.exact === 'denied' ? '⏰ اسمحوا للتطبيق بـ «المنبّهات والتذكيرات» عشان التنبيه يوصل في معاده بالظبط' : '✅ الإشعارات مفعّلة وهتظهر في ستارة الموبايل وعلى الشاشة') : (s.perm === 'denied' ? '🔕 الإشعارات مقفولة. افتحوا إعدادات الموبايل ← التطبيقات ← سبحة الأبطال ← الإشعارات وفعّلوها' : '🔔 محتاجين إذنكم عشان نبعت تنبيه الأذكار على الموبايل'),
+permBtn: s.perm === 'prompt' || s.perm === 'denied' || (s.perm === 'granted' && s.exact === 'denied'),
+permBtnTxt: s.perm === 'granted' ? 'السماح' : (s.perm === 'denied' ? 'حاول تاني' : 'تفعيل'),
+permGo: () => { const N = window.TK && window.TK.notif; if (!N) return; if (s.perm === 'granted') { N.openExact().then(() => this.checkPerm()); return; } N.ask().then((perm) => { this.setState({ perm: perm === 'web' ? 'web' : perm }); if (perm === 'granted') N.sync(); this.checkPerm(); }); },
+testMsg: s.testMsg,
 nm: s.nm, msg: s.msg, askDel: s.askDel, noAsk: !s.askDel,
 setNm: (e) => this.setState({ nm: e.target.value, msg: '' }),
 gBoy: () => this.setState({ g: 'boy' }), gGirl: () => this.setState({ g: 'girl' }),
@@ -121,7 +135,7 @@ noDelete: () => this.setState({ askDel: false }),
 doDelete: () => { const T = window.TK; if (T && k.id !== 'demo') { T.delKid(k.id); this.syncGo(T.acct() && T.acct().kids.length ? 'Parent.dc.html' : 'Start.dc.html?skip=1'); } },
 banner: s.banner,
 bannerText: 'صباح الخير يا ' + k.name + '! أذكارك مستنياك',
-test: () => { try { const A = (window.TK_AUDIO || {})[k.girl ? 'girl' : 'boy'], u = A && A.alerts; if (u && k.sound !== 'off') { const au = new Audio(u); au.play().catch(() => {}); } } catch (e) {} this.setState({ banner: false }); setTimeout(() => this.setState({ banner: true }), 30); setTimeout(() => this.setState({ banner: false }), 3700); }
+test: () => { this.playTone(k); this.setState({ banner: false }); setTimeout(() => this.setState({ banner: true }), 30); setTimeout(() => this.setState({ banner: false }), 3700); try { const N = window.TK && window.TK.notif; if (N && k.id !== 'demo') { N.test(k.id, 6).then((r) => { const m = { ok: '📲 هيظهر إشعار حقيقي على الموبايل خلال ٦ ثوانٍ (جرّبوا تقفلوا الشاشة)', denied: '🔕 الإشعارات مقفولة، فعّلوها من الزر اللي فوق', fail: 'حصلت مشكلة في إرسال الإشعار، جرّبوا تاني', web: '' }; this.setState({ testMsg: m[r] || '' }); this.checkPerm(); setTimeout(() => this.setState({ testMsg: '' }), 9000); }); } } catch (e) {} }
 };
 }
 }

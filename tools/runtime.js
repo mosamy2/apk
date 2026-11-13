@@ -108,16 +108,20 @@
     while (live.childNodes.length > nk.length) live.removeChild(live.lastChild);
   }
 
-  function fit(stage, w, h) {
+  /* scroll=true: fill the screen width and let the page scroll up/down with the finger */
+  function fit(stage, w, h, scroll) {
     const vw = window.innerWidth, vh = window.innerHeight;
+    const tall = h > 850 || (scroll && (h * vw / w) > vh + 1);
     let k = Math.min(vw / w, vh / h);
-    if (h > 850) k = vw / w; // tall pages: fit width and scroll
+    if (tall) k = vw / w; // fit width and scroll
     stage.style.transform = 'scale(' + k + ')';
     stage.style.transformOrigin = 'top left';
     const sw = w * k, sh = h * k;
     stage.style.left = Math.max(0, (vw - sw) / 2) + 'px';
-    stage.style.top = h > 850 ? '0px' : Math.max(0, (vh - sh) / 2) + 'px';
-    document.getElementById('spacer').style.height = (h > 850 ? sh : 0) + 'px';
+    stage.style.top = tall ? '0px' : Math.max(0, (vh - sh) / 2) + 'px';
+    document.getElementById('spacer').style.height = (tall ? sh : 0) + 'px';
+    document.documentElement.style.overflowY = tall ? 'auto' : 'hidden';
+    document.body.style.overflowY = tall ? 'auto' : 'hidden';
   }
 
   window.DC = {
@@ -131,7 +135,7 @@
       const stage = document.getElementById('stage');
       stage.style.width = w + 'px'; stage.style.height = h + 'px';
       const inst = new Component({});
-      let first = true, pending = false;
+      let first = true, pending = false, scroll = false;
       const render = () => {
         pending = false;
         let vals;
@@ -144,10 +148,12 @@
           const fe = root.firstElementChild;
           if (fe) { const bg = fe.style.backgroundColor || fe.style.background; if (bg) document.body.style.background = bg; }
         } else morphKids(root, out);
+        let sc = false; try { sc = typeof inst.scrollable === 'function' && !!inst.scrollable(); } catch (e) {}
+        if (sc !== scroll) { scroll = sc; fit(stage, w, h, scroll); if (!sc) window.scrollTo(0, 0); }
       };
       inst.__schedule = () => { if (!pending) { pending = true; Promise.resolve().then(render); } };
-      window.addEventListener('resize', () => fit(stage, w, h));
-      fit(stage, w, h);
+      window.addEventListener('resize', () => fit(stage, w, h, scroll));
+      fit(stage, w, h, scroll);
       window.__dc = inst;
       render();
     }

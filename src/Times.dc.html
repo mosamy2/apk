@@ -50,7 +50,7 @@ setAm: (e) => this.set(k.id, 'amT', e.target.value), setPm: (e) => this.set(k.id
 save: () => {
 const kids = a ? a.kids : [];
 for (const k of kids) { const t = s.t[k.id]; if (t.amT < 240 || t.amT > 600) { this.setState({ err: 'وقت الصباح لـ ' + k.name + ' بين ٤ ص و ١٠ ص' }); return; } if (t.pmT < 900 || t.pmT > 1200) { this.setState({ err: 'وقت المساء لـ ' + k.name + ' بين ٣ م و ٨ م' }); return; } }
-kids.forEach((k) => T.setTimes(k.id, { amT: s.t[k.id].amT, pmT: s.t[k.id].pmT, am: true, pm: true, sound: 'soft' }));
+kids.forEach((k) => T.setTimes(k.id, { amT: s.t[k.id].amT, pmT: s.t[k.id].pmT, am: true, pm: true, sound: 'fun', snd: 'fun' }));
 T.markSetup(); let done = false; const go = () => { if (!done) { done = true; T.go('Start.dc.html?skip=1'); } }; try { T.notif.sync().then(go, go); setTimeout(go, 6000); } catch (e) { go(); }
 }
 };

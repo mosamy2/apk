@@ -28,7 +28,9 @@ jobs:
         run: |
           sed -i 's#<application#<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/><uses-permission android:name="android.permission.USE_EXACT_ALARM"/><uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/><uses-permission android:name="android.permission.VIBRATE"/><application#' android/app/src/main/AndroidManifest.xml
           mkdir -p android/app/src/main/res/raw
-          cp audio/boy_alerts.mp3 audio/girl_alerts.mp3 android/app/src/main/res/raw/
+          cp audio/boy_alerts.mp3 audio/girl_alerts.mp3 audio/fx_soft.mp3 android/app/src/main/res/raw/
+          mkdir -p android/app/src/main/res/drawable
+          cp tools/ic_stat_tk.xml android/app/src/main/res/drawable/
       - run: npx cap sync android
       - name: Build debug APK
         working-directory: android

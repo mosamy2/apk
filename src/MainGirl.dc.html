@@ -215,7 +215,7 @@ this.g = 'girl'; try { this.nm = window.localStorage.getItem('tk_name_girl'); } 
 this.dbKey = 'tk_db_' + this.g;
 try { const db = JSON.parse(window.localStorage.getItem(this.dbKey)); if (db && db.v === 2 && db.s) { Object.assign(this.state, db.s, { view: 'map', count: 0, gain: 0, riding: false, ringing: false, popping: false, lock: false, burst: false, toast: '', vstat: '' }); if (this.state.tab === 'pm') Object.assign(this.state, { tab: 'am', progress: this.state.alt, alt: this.state.progress }); } } catch (e) {}
 try { const chk = () => { const p = this.rollDay(); if (p && !this.state.riding && this.state.view !== 'play') { this.clearAll(); this.setState(Object.assign({}, p, { view: p.passed ? 'levelend' : 'map', count: 0, gain: 0, lock: false })); this.say(p.passed ? 'أحسنت! أنهيت المستوى' : 'يوم جديد! اليوم ' + this.ar(p.day) + (p.day > 4 ? '' : ' من ٤'), ''); } }; document.addEventListener('visibilitychange', () => { if (!document.hidden) chk(); }); setInterval(chk, 60000); } catch (e) {}
-this.C = [[105,510],[238,444],[112,377],[231,311],[119,245],[225,178],[112,112],[210,46]]; this.LVK = { 1: ['rad', 'aud', 'sub', 'bis', 'ikh', 'ist', 'sal'], 2: ['ikh', 'fal', 'nas', 'sub', 'rad', 'ist', 'sal'], 3: ['kur', 'ikh', 'fal', 'nas', 'sub', 'ist', 'sal'], 4: ['sey', 'kur', 'bis', 'aud', 'sub', 'ist', 'sal'], 5: ['kur', 'sey', 'aud', 'bis', 'sub', 'ist', 'sal'] }; this.CNT = { 1: 20, 2: 65, 3: 63, 4: 61, 5: 151 }; { const p0 = this.rollDay(); if (p0) Object.assign(this.state, p0, { view: p0.passed ? 'levelend' : 'map' }); } }
+this.C = [[105,510],[238,444],[112,377],[231,311],[119,245],[225,178],[112,112],[210,46]]; this.DAYS = [['ikh', 'sub', 'rad'], ['kur', 'aud', 'hwl'], ['sey', 'hmd', 'hyy'], ['bis', 'lai', 'hsb']]; this.CT = { ikh: [1,3,3,3,3], fal: [1,3,3,3,3], nas: [1,3,3,3,3], kur: [1,1,1,1,1], sey: [1,1,1,1,1], sub: [10,33,33,33,100], ist: [3,10,10,10,33], sal: [3,10,10,10,10], rad: [1,3,3,3,3], aud: [1,3,3,3,3], bis: [1,3,3,3,3], lai: [1,3,10,10,10], hmd: [1,3,3,3,3], hwl: [3,10,10,10,33], hsb: [1,3,3,7,7], hyy: [1,3,3,3,3] }; this.dayKeys = (day) => this.DAYS[(Math.max(1, day) - 1) % 4].concat(['fal', 'nas', 'ist', 'sal']); this.dayList = (lv, day) => this.dayKeys(day).map((k) => [k, this.CT[k][lv - 1]]); this.seenKeys = () => { const out = []; for (let d = 1; d <= Math.min(this.state.day || 1, 4); d++) this.dayKeys(d).forEach((k) => { if (out.indexOf(k) < 0) out.push(k); }); return out; }; { const p0 = this.rollDay(); if (p0) Object.assign(this.state, p0, { view: p0.passed ? 'levelend' : 'map' }); } }
 ar(n) { return String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]); }
 today() { const d = new Date(Date.now() + (this.state.shift || 0) * 864e5); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 pmMin() { let m = 900; try { const t = JSON.parse(window.localStorage.getItem('tk_times_' + this.g)); if (t && t.pmT) m = t.pmT; } catch (e) {} return m; }
@@ -275,7 +275,7 @@ startOrder() {
 this.clearAll();
 const P = this.PT, clean = (k) => P[k].t.split(/\s+/).filter(Boolean).map((w) => w.replace(/[،,.؛:]+$/, '')).filter((w) => !/^[ۖ-ۭ]+$/.test(w));
 const shuf = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const x = a[i]; a[i] = a[j]; a[j] = x; } return a; };
-let keys = this.LVK[this.state.level].filter((k) => clean(k).length <= 17);
+let keys = this.seenKeys().filter((k) => clean(k).length <= 17);
 if (keys.length < 3) Object.keys(P).forEach((k) => { if (keys.length < 4 && !keys.includes(k) && clean(k).length <= 17) keys.push(k); });
 const qs = shuf(keys.slice()).slice(0, 4).map((k) => { const words = clean(k); let order = words.map((w, i) => i).slice(1); for (let n = 0; n < 8 && order.length > 1; n++) { order = shuf(order); if (order.some((v, i) => v !== i + 1)) break; } return { k, words, order }; });
 this.setState({ view: 'order', od: { qs, i: 0, pos: 1, used: [], flash: -1, mist: 0, solved: false, score: 0, done: false, gain: 0 } });
@@ -301,7 +301,7 @@ this.clearAll();
 const P = this.PT, base = (w) => w.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, ''), skip = (w) => /صلى|عليه|وسلم/.test(base(w)) || base(w).length < 3;
 const shuf = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const x = a[i]; a[i] = a[j]; a[j] = x; } return a; };
 const pool = []; Object.keys(P).forEach((k) => P[k].t.split(/\s+/).filter(Boolean).map((w) => w.replace(/[،,.؛:]+$/, '')).filter((w) => !/^[ۖ-ۭ]+$/.test(w)).forEach((w) => { if (!skip(w) && !pool.some((p) => base(p) === base(w))) pool.push(w); }));
-const qs = shuf(this.LVK[this.state.level].slice()).map((k) => {
+const qs = shuf(this.seenKeys().slice()).map((k) => {
 const words = P[k].t.split(/\s+/).filter(Boolean).map((w) => w.replace(/[،,.؛:]+$/, '')).filter((w) => !/^[ۖ-ۭ]+$/.test(w)); let idx = 0, best = 0;
 words.forEach((w, i) => { const L = base(w).length; if (!skip(w) && L > best) { best = L; idx = i; } });
 const ans = words[idx], a = 0, b = words.length;
@@ -388,7 +388,7 @@ startMemory() {
 this.clearAll();
 const P = this.PT, clean = (k) => P[k].t.split(/\s+/).filter(Boolean).map((w) => w.replace(/[،,.؛:]+$/, '')).filter((w) => !/^[ۖ-ۭ]+$/.test(w));
 const shuf = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const x = a[i]; a[i] = a[j]; a[j] = x; } return a; };
-const qs = shuf(this.LVK[this.state.level].slice()).map((k) => {
+const qs = shuf(this.seenKeys().slice()).map((k) => {
 const words = clean(k), n = words.length, tl = Math.min(8, Math.max(1, Math.ceil(n / 2)));
 const head = words.slice(0, n - tl), tail = words.slice(n - tl).join(' ');
 const others = shuf(Object.keys(P).filter((x) => x !== k)).map((x) => { const w = clean(x); return w.slice(Math.max(0, w.length - tl)).join(' '); }).filter((x, i, a) => x !== tail && a.indexOf(x) === i).slice(0, 3);
@@ -410,7 +410,7 @@ this.setState({ mg: Object.assign({}, m, { open: ci, tries: m.tries + 1, lock: t
 this.later(() => this.setState({ mg: Object.assign({}, this.state.mg, { open: -1, lock: false }) }), 1100);
 }
 }
-evalLevel(ls, st, day) { const nsNeed = Math.ceil(0.8 * 4 * (this.CNT[this.state.level] + 24)), stNeed = 23; return { nsNeed, stNeed, pass: day >= 4 && ls >= nsNeed && st >= stNeed }; }
+evalLevel(ls, st, day) { const nsNeed = Math.ceil(0.8 * [1, 2, 3, 4].reduce((a, d) => a + this.dayList(this.state.level, d).reduce((x, c) => x + c[1], 0) + 24, 0)), stNeed = 23; return { nsNeed, stNeed, pass: day >= 4 && ls >= nsNeed && st >= stNeed }; }
 nextDay() {
 const s = this.state;
 if (s.riding || s.view === 'cheer') return;
@@ -452,7 +452,7 @@ const P = {"ist": {"t": "أَسْتَغْفِرُ اللَّهَ وَأَتُو�
 const QURAN = { ikh: 1, fal: 1, nas: 1, kur: 1 };
 // مكان التسجيلات: ضع رابط ملف الصوت (أو قائمة روابط) لكل ذكر. تسجيلات الأطفال للأذكار غير القرآنية، وتلاوة الشيخ الحصري لآيات القرآن.
 const TA = window.TK_AUDIO || {}, AUDIO = { boy: TA.boy || {}, girl: TA.girl || {}, husary: TA.husary || {} };
-const LV = {"1": [["rad", 1], ["aud", 1], ["sub", 10], ["bis", 1], ["ikh", 1], ["ist", 3], ["sal", 3]], "2": [["ikh", 3], ["fal", 3], ["nas", 3], ["sub", 33], ["rad", 3], ["ist", 10], ["sal", 10]], "3": [["kur", 1], ["ikh", 3], ["fal", 3], ["nas", 3], ["sub", 33], ["ist", 10], ["sal", 10]], "4": [["sey", 1], ["kur", 1], ["bis", 3], ["aud", 3], ["sub", 33], ["ist", 10], ["sal", 10]], "5": [["kur", 1], ["sey", 1], ["aud", 3], ["bis", 3], ["sub", 100], ["ist", 33], ["sal", 10]]};
+const LV = {}; for (let l = 1; l <= 5; l++) LV[l] = this.dayList(l, l === s.level ? s.day : 1);
 const NAMES = LV[s.level].map((c) => P[c[0]].s);
 const cur = LV[s.level][Math.min(s.progress, 6)], d = Object.assign({}, P[cur[0]], { n: cur[1] });
 const C = this.C;
@@ -595,7 +595,7 @@ const kind = cur ? 'cur' : (dn && op ? 'done' : (op ? 'open' : 'lock'));
 const bg = { cur: '#EDE6FF', done: '#FFF4CC', open: '#fff', lock: '#F0F3FB' }[kind], bd = { cur: '#7B5CFF', done: '#E39A00', open: '#20B2A6', lock: '#C9D3F0' }[kind];
 const bb = { cur: '#7B5CFF', done: '#FFC93C', open: '#20B2A6', lock: '#C9D3F0' }[kind];
 return { num: kind === 'lock' ? '🔒' : ar(n), name: LVN[n],
-sub: LV[n].map((c) => P[c[0]].s).slice(0, 3).join('، ') + '…',
+sub: this.dayList(n, 1).map((c) => P[c[0]].s).slice(0, 3).join('، ') + '…',
 tag: { cur: 'أنت هنا', done: 'أنهيته ✓', open: 'ابدأ', lock: t('أنهِ', 'أنهي') + ' المستوى ' + ar(n - 1) }[kind].replace('أنهيته', t('أنهيته', 'أنهيتِه')),
 style: 'display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:22px;box-sizing:border-box;font-family:inherit;color:#1F2A5A;background:' + bg + ';border:3px solid ' + bd + (kind === 'lock' ? ';opacity:.85' : ''),
 badge: 'width:46px;height:46px;border-radius:23px;display:flex;align-items:center;justify-content:center;font-size:' + (kind === 'lock' ? 20 : 22) + 'px;font-weight:700;flex:none;color:' + (kind === 'cur' ? '#fff' : '#1F2A5A') + ';background:' + bb,

@@ -18,6 +18,16 @@ if (fs.existsSync('audio')) {
 }
 let TKT = {};
 if (fs.existsSync('audio/timings.json')) { const t = JSON.parse(fs.readFileSync('audio/timings.json', 'utf8')); for (const k in t) TKT[k] = t[k].words.map((w) => w.s); }
+const FX3D_CSS = `button,a[href]{transition:transform .15s ease,box-shadow .15s ease,filter .15s}
+button:active,a[href]:active{transform:translateY(4px) scale(.97)!important;filter:brightness(.96)}
+input:focus{outline:0;transform:translateY(-2px);box-shadow:0 6px 0 rgba(255,138,61,.35),0 10px 14px rgba(31,42,90,.15)}
+@keyframes pageIn3d{0%{opacity:0;transform:perspective(900px) translateY(26px) rotateX(10deg)}100%{opacity:1;transform:perspective(900px) translateY(0) rotateX(0)}}
+@keyframes fx3dFloat{0%,100%{transform:translate3d(0,0,0) rotateY(0) rotateZ(-6deg)}50%{transform:translate3d(0,-16px,0) rotateY(180deg) rotateZ(6deg)}}
+#root>*{animation:pageIn3d .7s cubic-bezier(.2,.8,.3,1) backwards}
+.fx3d{position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none;z-index:2;overflow:hidden;perspective:600px}
+.fx3d i{position:absolute;font-style:normal;filter:drop-shadow(0 6px 4px rgba(0,0,0,.25));animation:fx3dFloat 5s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){#root>*,.fx3d i{animation:none!important}}`;
+const FX3D_JS = `(function(){try{var st=document.getElementById('stage');if(!st)return;var d=document.createElement('div');d.className='fx3d';var E=['⭐','🌙','🎈','☁️','🌟','🦋'],P=[[8,8],[88,6],[4,92],[90,90],[92,48],[3,50]];E.forEach(function(e,i){var x=document.createElement('i');x.textContent=e;x.style.cssText='left:'+P[i][0]+'%;top:'+P[i][1]+'%;font-size:'+(22+(i%3)*6)+'px;animation-delay:'+(i*0.7)+'s;opacity:.85';d.appendChild(x)});st.appendChild(d)}catch(e){}})();`;
 const fix = (s) => s.replace(/(["'(])([A-Za-z]+)\.dc\.html/g, '$1$2.html');
 for (const file of fs.readdirSync(SRC).filter((f) => f.endsWith('.dc.html'))) {
   const html = fs.readFileSync(path.join(SRC, file), 'utf8');
@@ -40,6 +50,7 @@ for (const file of fs.readdirSync(SRC).filter((f) => f.endsWith('.dc.html'))) {
 <title>${title}</title>
 <style>html,body{margin:0;height:100%;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}input{-webkit-user-select:text;user-select:text}#stage{position:absolute;overflow:hidden}</style>
 ${helmet}
+<style>${FX3D_CSS}</style>
 </head>
 <body>
 <div id="spacer"></div>
@@ -49,6 +60,7 @@ ${helmet}
 <script>
 ${fix(script).replace(/<\/script/g, "<\\/script")}
 DC.mount(Component, { w: ${w}, h: ${h} });
+${/^Main/.test(file) ? '' : FX3D_JS}
 </script>
 </body>
 </html>

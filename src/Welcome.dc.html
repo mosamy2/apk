@@ -40,7 +40,7 @@ input{font-family:inherit}
 </div>
 </div>
 <sc-if value="{{idle}}" hint-placeholder-val="{{ true }}"><button onClick="{{start}}" style="position:absolute;left:20px;right:20px;bottom:44px;height:60px;border-radius:30px;border:0;background:#FF8A3D;box-shadow:0 5px 0 #D86A1F;color:#1F2A5A;font-size:20px;font-weight:700">حفظ الطفل</button></sc-if>
-<sc-if value="{{celebrating}}" hint-placeholder-val="{{ false }}"><a id="gostart" href="Start.dc.html?skip=1" style="position:absolute;left:20px;right:20px;bottom:44px;height:60px;border-radius:30px;background:#20B2A6;box-shadow:0 5px 0 #138A80;color:#1F2A5A;font-size:19px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;z-index:5">عرض حسابات الأطفال</a></sc-if><sc-if value="{{canAddMore}}" hint-placeholder-val="{{ false }}"><a href="Welcome.dc.html" style="position:absolute;left:20px;right:20px;bottom:114px;height:52px;border-radius:26px;background:#fff;border:3px solid #FF8A3D;color:#1F2A5A;font-size:17px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;z-index:5">+ إضافة طفل آخر</a></sc-if>
+<sc-if value="{{celebrating}}" hint-placeholder-val="{{ false }}"><a id="gostart" href="{{goHref}}" style="position:absolute;left:20px;right:20px;bottom:44px;height:60px;border-radius:30px;background:#20B2A6;box-shadow:0 5px 0 #138A80;color:#1F2A5A;font-size:19px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;z-index:5">{{goLabel}}</a></sc-if><sc-if value="{{canAddMore}}" hint-placeholder-val="{{ false }}"><a href="{{moreHref}}" style="position:absolute;left:20px;right:20px;bottom:114px;height:52px;border-radius:26px;background:#fff;border:3px solid #FF8A3D;color:#1F2A5A;font-size:17px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;z-index:5">+ إضافة طفل آخر</a></sc-if>
 <sc-if value="{{celebrating}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:0;right:0;top:0;height:844px;pointer-events:none;overflow:hidden"><sc-for list="{{confetti}}" as="c" hint-placeholder-count="3"><i style="{{c.style}}"></i></sc-for></div></sc-if>
 <div style="position:absolute;bottom:14px;font-size:12px;font-weight:600">حساب طفلك سيرتبط بحساب الأهل ويتابعونه منه</div>
 </div>
@@ -51,7 +51,9 @@ constructor(p) { super(p); this.state = { name: '', who: 'boy', n: 0, celebratin
 renderVals() {
 const s = this.state;
 const st = (on) => 'flex:1;min-height:132px;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#1F2A5A;background:' + (on ? '#FFE08A' : '#fff') + ';border:4px solid ' + (on ? '#FF8A3D' : '#C9D3F0');
+const first = !!(window.TK && window.TK.qs('first'));
 return {
+goHref: first ? 'Times.dc.html' : 'Start.dc.html?skip=1', moreHref: first ? 'Welcome.dc.html?first=1' : 'Welcome.dc.html', goLabel: first ? 'التالي: مواعيد التنبيه' : 'عرض حسابات الأطفال',
 greeting: s.celebrating ? 'مرحبًا بك' + (s.name.trim() ? ' يا ' + s.name.trim() : '') + '! ما شاء الله' : (s.name.trim() ? 'أهلًا يا ' + s.name.trim() + '!' : 'أهلًا بك يا بطل!'),
 idle: !s.celebrating, celebrating: s.celebrating,
 greetAnim: s.celebrating ? 'pulse .6s ease-in-out infinite' : 'none',

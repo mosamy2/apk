@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>مواعيد التنبيه</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap">
+<style>
+body{margin:0}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+@keyframes bob{0%,100%{transform:translateY(0) rotateY(0)}50%{transform:translateY(-8px) rotateY(12deg)}}
+@keyframes rise{0%{opacity:0;transform:perspective(600px) translateY(30px) rotateX(18deg)}100%{opacity:1;transform:perspective(600px) translateY(0) rotateX(0)}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important}}
+</style>
+</helmet>
+<div dir="rtl" style="width:390px;height:844px;box-sizing:border-box;background:linear-gradient(180deg,#DFF3FF,#F3EAFF);font-family:'Noto Sans Arabic',Arial,sans-serif;color:#1F2A5A;position:relative;overflow:hidden">
+<div style="padding:52px 20px 0;text-align:center"><div style="font-size:46px;animation:bob 2.6s ease-in-out infinite">⏰</div><div style="font-size:23px;font-weight:700;margin-top:4px">متى نذكّر أطفالكم بالأذكار؟</div><div style="font-size:13px;font-weight:600;margin-top:4px;color:#44507F">حدّدوا موعد تنبيه الصباح والمساء لكل طفل. تقدرون تغيّرونها لاحقًا من منطقة الأهل.</div></div>
+<div style="position:absolute;left:20px;right:20px;top:170px;bottom:112px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:6px">
+<sc-for list="{{kids}}" as="k" hint-placeholder-count="2"><div style="{{k.card}}"><div style="display:flex;align-items:center;gap:10px"><span style="{{k.dot}}">{{k.initial}}</span><span style="font-size:18px;font-weight:700">{{k.name}}</span></div>
+<div style="display:flex;gap:10px;margin-top:10px"><div style="flex:1"><label style="display:block;font-size:13px;font-weight:700;margin-bottom:4px">🌅 أذكار الصباح</label><input type="time" value="{{k.am}}" onChange="{{k.setAm}}" style="width:100%;box-sizing:border-box;height:48px;border-radius:14px;border:3px solid #FFC93C;background:#fff;text-align:center;font-size:19px;font-weight:700;color:#1F2A5A"></div><div style="flex:1"><label style="display:block;font-size:13px;font-weight:700;margin-bottom:4px">🌙 أذكار المساء</label><input type="time" value="{{k.pm}}" onChange="{{k.setPm}}" style="width:100%;box-sizing:border-box;height:48px;border-radius:14px;border:3px solid #7B5CFF;background:#fff;text-align:center;font-size:19px;font-weight:700;color:#1F2A5A"></div></div></div></sc-for>
+</div>
+<div style="position:absolute;left:20px;right:20px;bottom:100px;min-height:20px;text-align:center;font-size:13px;font-weight:700;color:#B3261E">{{err}}</div>
+<button onClick="{{save}}" style="position:absolute;left:20px;right:20px;bottom:36px;height:60px;border-radius:30px;border:0;background:#FF8A3D;box-shadow:0 6px 0 #D86A1F,0 12px 14px rgba(0,0,0,.18);color:#1F2A5A;font-size:20px;font-weight:700">حفظ وفتح حسابات الأطفال</button>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(p) { super(p);
+const T = window.TK, a = T ? T.acct() : null;
+if (T && (!a || !a.kids.length)) setTimeout(() => T.go('Start.dc.html?skip=1'), 0);
+this.state = { err: '', t: {} };
+(a ? a.kids : []).forEach((k) => { const t = T.times(k.id); this.state.t[k.id] = { amT: t.amT, pmT: t.pmT }; });
+}
+hm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
+mins(v) { const p = /^(\d{1,2}):(\d{2})$/.exec(v || ''); return p ? +p[1] * 60 + +p[2] : null; }
+set(id, key, v) { const m = this.mins(v); if (m == null) return; const t = Object.assign({}, this.state.t); t[id] = Object.assign({}, t[id], { [key]: m }); this.setState({ t, err: '' }); }
+renderVals() {
+const T = window.TK, a = T ? T.acct() : null, s = this.state;
+return {
+err: s.err,
+kids: (a ? a.kids : []).map((k) => ({ name: k.name, initial: k.name[0], am: this.hm(s.t[k.id].amT), pm: this.hm(s.t[k.id].pmT),
+card: 'background:#fff;border-radius:22px;padding:12px 14px;box-shadow:0 6px 0 rgba(31,42,90,.14),0 12px 16px rgba(31,42,90,.1);animation:rise .6s ease-out both',
+dot: 'width:34px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:16px;background:' + (k.g === 'girl' ? '#FF6FA5' : '#FFC93C'),
+setAm: (e) => this.set(k.id, 'amT', e.target.value), setPm: (e) => this.set(k.id, 'pmT', e.target.value) })),
+save: () => {
+const kids = a ? a.kids : [];
+for (const k of kids) { const t = s.t[k.id]; if (t.amT < 240 || t.amT > 600) { this.setState({ err: 'وقت الصباح لـ ' + k.name + ' بين ٤ ص و ١٠ ص' }); return; } if (t.pmT < 900 || t.pmT > 1200) { this.setState({ err: 'وقت المساء لـ ' + k.name + ' بين ٣ م و ٨ م' }); return; } }
+kids.forEach((k) => T.setTimes(k.id, { amT: s.t[k.id].amT, pmT: s.t[k.id].pmT, am: true, pm: true, sound: 'soft' }));
+T.markSetup(); T.go('Start.dc.html?skip=1');
+}
+};
+}
+}
+</script>
+</body>
+</html>

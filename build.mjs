@@ -37,6 +37,16 @@ function pop(kind){var a=ctx();if(!a)return;try{var t=a.currentTime+0.005,o=a.cr
 var o2=a.createOscillator(),g2=a.createGain();o2.type='triangle';o2.frequency.setValueAtTime(f*2.5,t+0.035);g2.gain.setValueAtTime(0.0001,t+0.035);g2.gain.exponentialRampToValueAtTime(0.05,t+0.045);g2.gain.exponentialRampToValueAtTime(0.0001,t+0.12);o2.connect(g2);g2.connect(a.destination);o2.start(t+0.035);o2.stop(t+0.14);}catch(e){}}
 var SKIP=/^(سبّح|اضغط الجرس)/;
 document.addEventListener('pointerdown',function(e){var b=e.target&&e.target.closest&&e.target.closest('button,a[href],[role=switch]');if(!b||b.disabled||b.hasAttribute('data-nosfx'))return;var l=b.getAttribute('aria-label')||'';if(SKIP.test(l)||muted())return;var n=Date.now();if(n-last<60)return;last=n;pop(b.getAttribute('role')==='switch'?'sw':(b.tagName==='A'?'nav':'btn'));},true);})();`;
+/* drag the journey page up/down with the finger (elements marked data-pan); it springs back on release */
+const PAN_JS = `(function(){var el=null,id=null,y0=0,p0=0,drag=false,k=1,tEnd=0;var MIN=-170,MAX=120;
+function scale(){var st=document.getElementById('stage');return st&&st.offsetWidth?st.getBoundingClientRect().width/st.offsetWidth:1;}
+function set(v){window.__pan=v;if(el)el.style.transform='translateY('+v+'px)';}
+function damp(v){return v<0?Math.max(MIN,v):Math.min(MAX,v);}
+document.addEventListener('pointerdown',function(e){var t=e.target&&e.target.closest&&e.target.closest('[data-pan]');if(!t||(e.pointerType==='mouse'&&e.button!==0))return;el=t;id=e.pointerId;y0=e.clientY;p0=window.__pan||0;drag=false;k=scale()||1;el.style.transition='none';},true);
+document.addEventListener('pointermove',function(e){if(!el||e.pointerId!==id)return;var dy=e.clientY-y0;if(!drag&&Math.abs(dy)<8)return;drag=true;var v=p0+dy/k;set(v<0?Math.max(MIN,v*0.9):Math.min(MAX,v*0.9));},true);
+function end(e){if(!el||(e&&e.pointerId!==id))return;var t=el;if(drag){tEnd=Date.now();t.style.transition='transform .38s cubic-bezier(.2,.9,.3,1.1)';window.__pan=0;t.style.transform='translateY(0px)';}el=null;drag=false;}
+document.addEventListener('pointerup',end,true);document.addEventListener('pointercancel',end,true);
+document.addEventListener('click',function(e){if(Date.now()-tEnd<350){e.stopPropagation();e.preventDefault();}},true);})();`;
 const fix = (s) => s.replace(/(["'(])([A-Za-z]+)\.dc\.html/g, '$1$2.html');
 for (const file of fs.readdirSync(SRC).filter((f) => f.endsWith('.dc.html'))) {
   const html = fs.readFileSync(path.join(SRC, file), 'utf8');
@@ -71,6 +81,7 @@ ${helmet}
 ${fix(script).replace(/<\/script/g, "<\\/script")}
 DC.mount(Component, { w: ${w}, h: ${h} });
 ${SFX_JS}
+${PAN_JS}
 ${/^Main/.test(file) ? '' : FX3D_JS}
 </script>
 </body>

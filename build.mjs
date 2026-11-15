@@ -7,6 +7,8 @@ fs.mkdirSync(OUT, { recursive: true });
 fs.copyFileSync('tools/runtime.js', path.join(OUT, 'runtime.js'));
 const CAPJS = 'node_modules/@capacitor/core/dist/capacitor.js';
 if (fs.existsSync(CAPJS)) fs.copyFileSync(CAPJS, path.join(OUT, 'capacitor.js')); // gives window.Capacitor.registerPlugin on the phone
+const G3 = /^Main/;
+for (const [src, dst] of [['node_modules/three/build/three.module.js', 'three.module.js'], ['node_modules/three/build/three.core.js', 'three.core.js'], ['tools/garden3d.js', 'garden3d.js']]) if (fs.existsSync(src)) fs.copyFileSync(src, path.join(OUT, dst)); // 3D garden (loaded lazily by the Main pages)
 for (const f of ['manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'tkstore.js']) if (fs.existsSync('tools/' + f)) fs.copyFileSync('tools/' + f, path.join(OUT, f));
 const TKA = { boy: {}, girl: {}, husary: {}, fx: {} };
 if (fs.existsSync('audio')) {
@@ -84,6 +86,7 @@ ${SFX_JS}
 ${PAN_JS}
 ${/^Main/.test(file) ? '' : FX3D_JS}
 </script>
+${/^Main/.test(file) && fs.existsSync(path.join(OUT, 'garden3d.js')) ? `<script>window.addEventListener('load',function(){setTimeout(function(){try{import('./garden3d.js').catch(function(e){window.__g3d='';try{console.error('garden3d',e)}catch(x){}})}catch(e){}},500)})</script>` : ''}
 </body>
 </html>
 `;

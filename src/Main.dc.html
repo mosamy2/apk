@@ -281,7 +281,7 @@ voice() {} // النطق مُلغى حاليًا: يُضاف في تحديث ل�
 playUrls(u) { const L = Array.isArray(u) ? u : [u]; let i = 0; const next = () => { if (i >= L.length) return; try { const a = new Audio(L[i++]); a.onended = next; a.play(); } catch (e) {} }; next(); }
 birdsInit() { const want = () => this.state.tab === 'am' && this.state.view === 'map' && !this.state.muted && !document.hidden;
 const tick = () => { try { const u = ((window.TK_AUDIO || {}).fx || {}).birds; if (!u) return; if (!this.bAud) { this.bAud = new Audio(u); this.bAud.loop = true; this.bAud.volume = 0; this.bAud.preload = 'auto'; }
-const a = this.bAud, w = want(), vmax = 0.4;
+const a = this.bAud, w = want(), vmax = 0.6;
 if (w) { if (a.paused && !this.bBlock) { const pr = a.play(); if (pr && pr.catch) pr.catch(() => { this.bBlock = true; }); } if (!a.paused) a.volume = Math.min(vmax, a.volume + 0.03); }
 else if (!a.paused) { a.volume = Math.max(0, a.volume - 0.06); if (a.volume <= 0.001) a.pause(); } } catch (e) {} };
 this.bTimer = setInterval(tick, 150);

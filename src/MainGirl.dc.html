@@ -23,6 +23,7 @@ button{font-family:inherit;cursor:pointer}
 @keyframes pop0{0%{transform:scale(1)}40%{transform:scale(.88)}75%{transform:scale(1.08)}100%{transform:scale(1)}}
 @keyframes pop1{0%{transform:scale(1)}40%{transform:scale(.88)}75%{transform:scale(1.08)}100%{transform:scale(1)}}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(.8)}100%{opacity:0;transform:translateY(-70px) scale(1.3)}}
+@keyframes gfloat{0%,100%{transform:translate(0,0)}50%{transform:translate(12px,-9px)}}
 @keyframes jump{0%,100%{transform:translateY(0)}40%{transform:translateY(-14px)}}
 @keyframes cheer{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-30px) rotate(-10deg)}50%{transform:translateY(0)}75%{transform:translateY(-30px) rotate(10deg)}}
 @keyframes fall{0%{transform:translateY(-40px) rotate(0);opacity:1}100%{transform:translateY(880px) rotate(540deg);opacity:1}}
@@ -90,7 +91,7 @@ button{font-family:inherit;cursor:pointer}
 </div>
 </div>
 <sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:20px;right:20px;bottom:104px;z-index:12;background:#1F2A5A;color:#fff;border-radius:18px;padding:12px 16px;font-size:15px;font-weight:700;text-align:center;animation:fadeUp 2.4s ease-in-out forwards">{{toast}}</div></sc-if>
-<div style="position:absolute;left:0;right:0;bottom:0;height:88px;z-index:7;background:#fff;border-radius:24px 24px 0 0;display:flex;padding:10px 8px 24px;box-sizing:border-box"><sc-for list="{{tabs}}" as="b" hint-placeholder-count="3"><button onClick="{{b.go}}" style="{{b.style}}"><span style="{{b.dot}}"></span>{{b.label}}</button></sc-for><a href="Pin.dc.html" style="flex:1;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:#1F2A5A;font-weight:600"><span style="width:30px;height:30px;border-radius:15px;background:#7B5CFF;opacity:.55"></span>الأهل</a></div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:88px;z-index:7;background:#fff;border-radius:24px 24px 0 0;display:flex;padding:10px 8px 24px;box-sizing:border-box"><sc-for list="{{tabs}}" as="b" hint-placeholder-count="4"><button onClick="{{b.go}}" style="{{b.style}}"><span style="{{b.dot}}"></span>{{b.label}}</button></sc-for><a href="Pin.dc.html" style="flex:1;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:#1F2A5A;font-weight:600"><span style="width:30px;height:30px;border-radius:15px;background:#7B5CFF;opacity:.55"></span>الأهل</a></div>
 <sc-if value="{{isPlay}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:0;right:0;top:0;bottom:0;z-index:8;background:#DFF3FF;display:flex;flex-direction:column">
 <div style="padding:44px 20px 6px;display:flex;align-items:center;gap:12px">
 <button aria-label="رجوع للخريطة" onClick="{{closePlay}}" style="width:44px;height:44px;border-radius:22px;border:0;background:#fff;font-size:22px;color:#1F2A5A;font-weight:700">×</button>
@@ -211,6 +212,16 @@ button{font-family:inherit;cursor:pointer}
 <div style="font-size:15px;font-weight:600;margin-top:4px;color:#44507F">{{gmSub}}</div>
 <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;padding-bottom:20px"><sc-for list="{{gameItems}}" as="m" hint-placeholder-count="5"><button onClick="{{m.go}}" style="{{m.style}}"><span style="{{m.emoji}}">{{m.icon}}</span><span style="flex:1;text-align:right"><span style="display:block;font-size:18px;font-weight:700">{{m.name}}</span><span style="display:block;font-size:12px;font-weight:600;color:#596392;margin-top:2px">{{m.desc}}</span></span><span style="{{m.tagStyle}}">{{m.tag}}</span></button></sc-for></div>
 </div></sc-if>
+<sc-if value="{{isGarden}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:0;right:0;top:0;bottom:88px;z-index:7;background:linear-gradient(180deg,{{gdSky}} 0%,#D9F5C8 55%,#B7E39A 100%);display:flex;flex-direction:column;padding:56px 20px 0;box-sizing:border-box;overflow:hidden">
+<div style="font-size:28px;font-weight:700">حديقتي 🌳</div>
+<div style="font-size:15px;font-weight:600;margin-top:4px;color:#2F5A3A">{{gdSub}}</div>
+<div style="height:36px;position:relative;margin-top:4px"><sc-for list="{{gdPets}}" as="q" hint-placeholder-count="2"><span style="{{q.style}}">{{q.e}}</span></sc-for></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px"><sc-for list="{{gdPlots}}" as="p" hint-placeholder-count="16"><button data-nosfx="1" aria-label="{{p.label}}" onClick="{{p.go}}" style="{{p.box}}"><span style="{{p.emojiStyle}}">{{p.emoji}}</span><span style="font-size:8px;color:#fff;letter-spacing:1px;margin-top:3px;height:9px">{{p.dots}}</span></button></sc-for></div>
+<sc-if value="{{gdCanHarvest}}" hint-placeholder-val="{{ false }}"><button onClick="{{gdDoHarvest}}" style="margin-top:12px;height:52px;border-radius:26px;border:0;background:#FF8A3D;box-shadow:0 5px 0 #D86A1F;color:#1F2A5A;font-size:17px;font-weight:700;font-family:inherit">{{gdHarvestTxt}}</button></sc-if>
+<div style="margin-top:12px;font-size:14px;font-weight:700;color:#2F5A3A;text-align:center">{{gdHint}}</div>
+<div style="margin-top:6px;font-size:13px;font-weight:600;color:#44507F;text-align:center">{{gdPetHint}}</div>
+<div style="margin-top:6px;font-size:14px;font-weight:700;color:#B26A00;text-align:center">{{gdTrophy}}</div>
+</div></sc-if>
 <sc-if value="{{isRewards}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;left:0;right:0;top:0;bottom:88px;z-index:7;background:#DFF3FF;display:flex;flex-direction:column;padding:56px 20px 0;box-sizing:border-box;overflow:auto">
 <div style="font-size:28px;font-weight:700">مكافآتي</div>
 <div style="font-size:15px;font-weight:600;margin-top:4px;color:#44507F">{{rwSub}}</div>
@@ -230,7 +241,7 @@ button{font-family:inherit;cursor:pointer}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
-constructor(p) { super(p); this.state = { level: 1, tab: 'am', progress: 2, view: 'map', count: 0, stars: 24, gain: 0, ringing: false, popping: false, lock: false, shake: '', toast: '', vstat: '', kw: -1, riding: false, tx: 0, ty: 0, dir: 1, burst: false, burstIdx: 0, saves: {}, alt: 0, gameStars: 0, muted: false, mg: null, cl: null, od: null, sg: null, rc: null, maxDone: 0, day: 1, lvSt: 0, lvStars: 0, passed: false, dayDate: null, shift: 0, hist: [] };
+constructor(p) { super(p); this.state = { level: 1, tab: 'am', progress: 2, view: 'map', count: 0, stars: 24, gain: 0, ringing: false, popping: false, lock: false, shake: '', toast: '', vstat: '', kw: -1, riding: false, tx: 0, ty: 0, dir: 1, burst: false, burstIdx: 0, saves: {}, alt: 0, gameStars: 0, muted: false, mg: null, cl: null, od: null, sg: null, rc: null, maxDone: 0, day: 1, lvSt: 0, lvStars: 0, passed: false, dayDate: null, shift: 0, hist: [], gd: null, gdPop: -1 };
 this.timers = [];
 try { window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices(); } catch (e) {}
 this.g = 'girl'; this.kid = 'girl'; this.nm = null; try { const T = window.TK, q = new URLSearchParams(window.location.search).get('k'); if (T && q) { const kd = T.kid(q); if (kd) { this.kid = kd.id; this.nm = kd.name; } } } catch (e) {} if (!this.nm) { try { this.nm = window.localStorage.getItem('tk_name_' + this.kid); } catch (e) {} }
@@ -273,6 +284,23 @@ return { dayDate: t, day: s.day + 1, progress: 0, alt: 0, gameStars: 0, tab: 'am
 }
 say(msg, id) { this.setState({ toast: msg, shake: id || '' }); clearTimeout(this.tm); this.tm = setTimeout(() => this.setState({ toast: '', shake: '' }), 2400); }
 clearAll() { try { if (this.curAudio) this.curAudio.pause(); } catch (e) {} try { if (this.fxA) this.fxA.pause(); } catch (e) {} clearTimeout(this.autoBack); clearInterval(this.rideIv); clearInterval(this.sgIv); clearInterval(this.kwIv); clearInterval(this.chugIv); (this.timers || []).forEach(clearTimeout); this.timers = []; this.setState({ riding: false, burst: false }); try { window.speechSynthesis.cancel(); } catch (e) {} }
+gdCat() { return this.g === 'girl' ? ['🌸','🌷','🌹','🌺','🌼','🌻','🍓','🍒','🍑','🍇','🍋','🍉','🍀','🍎','🌴','🌳'] : ['🌻','🌵','🌳','🍎','🌴','🌷','🍀','🌲','🍓','🥕','🍉','🌽','🍊','🍇','🍋','🍒']; }
+gdGet() { const g = this.state.gd; return g && Array.isArray(g.p) ? g : { p: [{ k: 0, s: 0 }], w: 4, se: 1, tr: 0, bl: 0 }; }
+gdEarn(full) { try { const g = JSON.parse(JSON.stringify(this.gdGet())); g.w += full ? 3 : 1; if (full && g.p.length < 16) g.p.push({ k: (g.p.length + (g.se - 1) * 5) % 16, s: 0 }); this.setState({ gd: g }); } catch (e) {} }
+gdWater(i) { const g = JSON.parse(JSON.stringify(this.gdGet())), pl = g.p[i]; if (!pl) { this.say('تظهر نبتة جديدة كل ما تُنهي جلسة أذكار كاملة 🌱', ''); return; } if (pl.s >= 4) { this.say('ما شاء الله! زهرة جميلة ' + (this.g === 'girl' ? '🌸' : '🌻'), ''); this.tone(988, 0, 0.12, 'sine', 0.1); return; } if (g.w < 1) { this.say('أكمل ذكرًا جديدًا لتحصل على قطرة ماء 💧'.replace('أكمل', this.g === 'girl' ? 'أكملي' : 'أكمل'), ''); return; } g.w -= 1; pl.s += 1; if (pl.s === 4) { g.bl = (g.bl || 0) + 1; this.arp([784, 988, 1175, 1568, 1976], 0.09, 'triangle', 0.14); this.say('أزهرت! ما شاء الله ✨', ''); } else this.tone(700, 0, 0.12, 'sine', 0.12, 1100); this.setState({ gd: g, gdPop: i }); this.later(() => this.setState({ gdPop: -1 }), 650); }
+gdHarvest() { const g = JSON.parse(JSON.stringify(this.gdGet())); if (!(g.p.length >= 16 && g.p.every((x) => x.s >= 4))) return; g.tr = (g.tr || 0) + 1; g.se = (g.se || 1) + 1; g.w += 3; g.p = [{ k: ((g.se - 1) * 5) % 16, s: 0 }]; this.arp([523, 659, 784, 1047, 1319, 1568], 0.1, 'triangle', 0.14); this.say('حصاد جميل! بدأت حديقة جديدة 🎉', ''); this.setState({ gd: g }); }
+gdVals(s, ar) { const g = this.gdGet(), F = this.g === 'girl', CAT = this.gdCat(), SZ = [20, 26, 32, 24, 42];
+const plots = Array.from({ length: 16 }, (_, i) => { const pl = g.p[i]; if (!pl) return { box: 'height:76px;border-radius:18px;border:2px dashed #9CC98B;background:rgba(255,255,255,.45);font-family:inherit;display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:.8', emoji: '＋', emojiStyle: 'font-size:20px;color:#7DAF6C;font-weight:700', dots: '', label: 'قطعة فارغة', go: () => this.gdWater(i) };
+const e = pl.s === 0 ? '🌰' : (pl.s === 1 ? '🌱' : (pl.s === 2 ? '🌿' : CAT[pl.k % CAT.length]));
+return { box: 'height:76px;border-radius:18px;border:0;font-family:inherit;display:flex;align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(ellipse at 50% 108%,#8B5E3C 0 52%,#C9EDB0 53%);box-shadow:' + (pl.s >= 4 ? '0 0 0 3px #FFC93C,0 4px 10px rgba(255,201,60,.55)' : '0 3px 0 #6E4A2E') + ';animation:' + (s.gdPop === i ? 'jump .6s ease-out' : 'none'), emoji: e, emojiStyle: 'font-size:' + SZ[pl.s] + 'px;line-height:1;opacity:' + (pl.s === 3 ? 0.85 : 1), dots: '●●●●'.slice(0, pl.s) + '○○○○'.slice(0, 4 - pl.s), label: 'نبتة، المرحلة ' + ar(pl.s) + ' من ٤', go: () => this.gdWater(i) }; });
+const bloomed = g.p.filter((x) => x.s >= 4).length, PETS = [[3, '🦋'], [6, '🐝'], [10, '🐦'], [15, '🐞'], [22, '🐇']];
+const pets = PETS.filter((x) => (g.bl || 0) >= x[0]).map((x, i) => ({ e: x[1], style: 'position:absolute;top:0;left:' + (6 + i * 19) + '%;font-size:26px;animation:gfloat ' + (3.5 + i * 0.6) + 's ease-in-out infinite;animation-delay:' + (i * -0.8) + 's' }));
+const canH = g.p.length >= 16 && g.p.every((x) => x.s >= 4), nextPet = PETS.find((x) => (g.bl || 0) < x[0]);
+return { isGarden: s.view === 'garden', gdSky: F ? '#FFE3F0' : '#CFEFFF', gdPlots: plots, gdPets: pets, gdCanHarvest: canH,
+gdSub: '💧 ' + ar(g.w) + ' قطرة ماء · ' + (F ? '🌸' : '🌻') + ' أزهر ' + ar(bloomed) + ' من ١٦',
+gdHint: g.w > 0 ? (F ? 'اضغطي على نبتة لتسقيها 💧' : 'اضغط على نبتة لتسقيها 💧') : (F ? 'أكملي ذكرًا لتحصلي على قطرات ماء 💧' : 'أكمل ذكرًا لتحصل على قطرات ماء 💧'),
+gdPetHint: nextPet ? nextPet[1] + ' ' + (F ? 'يزورك' : 'يزورك') + ' ضيف جديد بعد ' + ar(nextPet[0] - (g.bl || 0)) + ' ' + ((nextPet[0] - (g.bl || 0)) > 2 ? 'أزهار' : 'زهرة') : 'كل أصدقاء الحديقة معك! 🎉',
+gdTrophy: g.tr > 0 ? '🏆 حدائق مكتملة: ' + ar(g.tr) : '', gdHarvestTxt: 'احصد الحديقة وابدأ حديقة جديدة 🎉', gdDoHarvest: () => this.gdHarvest() }; }
 later(fn, ms) { const id = setTimeout(fn, ms); this.timers.push(id); return id; }
 ctx() { try { if (!this.ac) this.ac = new (window.AudioContext || window.webkitAudioContext)(); if (this.ac.state === 'suspended') this.ac.resume(); return this.ac; } catch (e) { return null; } }
 tone(f, at, dur, type, vol, f2) { if (this.state.muted) return; const a = this.ctx(); if (!a) return; try { const o = a.createOscillator(), g = a.createGain(), t0 = a.currentTime + at; o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0); if (f2) o.frequency.linearRampToValueAtTime(f2, t0 + dur); g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol || 0.15, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur); o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0 + dur + 0.05); } catch (e) {} }
@@ -517,6 +545,7 @@ const np = Math.min(7, p + 1);
 if (np >= 7 && this.state.tab !== 'am') this.setState({ progress: np, riding: false, burst: true, burstIdx: np, stars: this.state.stars + 10 });
 else if (np >= 7) { const s0 = this.state, ls = s0.lvStars + 10, e = this.evalLevel(ls, s0.lvSt, s0.day); this.setState({ progress: np, riding: false, burst: true, burstIdx: np, stars: s0.stars + 10, lvStars: ls, passed: e.pass, maxDone: e.pass ? Math.max(s0.maxDone || 0, s0.level) : s0.maxDone }); }
 else this.setState({ progress: np, riding: false, burst: true, burstIdx: np });
+this.gdEarn(np >= 7);
 this.whistle();
 this.arp([784, 988, 1175, 1568], 0.12, 'triangle', 0.15);
 this.say(np >= 7 ? 'وصلنا للهدية! أنهيتِ كل المحطات' : 'وصلنا! فُتحت المحطة التالية', '');
@@ -579,7 +608,7 @@ const unl = (n) => TEST_UNLOCK_ALL || n <= md + 1;
 const ev = this.evalLevel(s.lvStars, s.lvSt, s.day);
 const newRw = RW.find((r) => s.stars - s.gain < r.need && s.stars >= r.need);
 const got = RW.filter((r) => s.stars >= r.need).length;
-const tabIdx = s.view === 'rewards' ? 1 : (s.view === 'games' ? 2 : 0);
+const tabIdx = s.view === 'rewards' ? 1 : (s.view === 'games' ? 2 : (s.view === 'garden' ? 3 : 0));
 const star = '<svg width="14" height="14" viewBox="0 0 24 24" fill="#FFC93C" stroke="#E39A00" stroke-width="1.5"><path d="M12 2l3 7 7 .6-5.3 4.7 1.6 7.2L12 17.8 5.7 21.5l1.6-7.2L2 9.6 9 9z"/></svg>';
 const nl = s.level + 1;
 Object.assign(out, {
@@ -606,7 +635,7 @@ style: 'display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;bo
 emoji: 'font-size:36px;line-height:1.1;flex:none;' + (ok ? '' : 'opacity:.5'),
 tagStyle: 'font-size:13px;font-weight:700;white-space:nowrap;padding:6px 12px;border-radius:16px;' + (ok ? 'background:#FF8A3D;color:#1F2A5A' : 'color:#596392'),
 go: () => ok ? this[g[4]]() : this.say(ok ? 'لعبة «' + g[1] + '» قادمة قريبًا!' : t('أنهِ', 'أنهي') + ' المستوى ' + ar(g[3] - 1) + ' لتفتح هذه اللعبة'.replace('لتفتح', t('لتفتح', 'لتفتحي')), '') }; }),
-isGames: s.view === 'games',
+isGames: s.view === 'games', ...this.gdVals(s, ar),
 isMemory: s.view === 'memory', memWon: !!(mg && mg.done),
 memProg: mg ? 'سؤال ' + ar(Math.min(mg.i + 1, mg.qs.length)) + ' من ' + ar(mg.qs.length) : '',
 memHint: mg ? (mg.phase === 'show' ? t('احفظ أماكن البطاقات! ', 'احفظي أماكن البطاقات! ') + '⏳ ' + ar(mg.cd) : (mg.wrong >= 0 ? 'ليست هذه، انظر البطاقة الصحيحة' : t('أين باقي الذكر؟ اختر البطاقة', 'أين باقي الذكر؟ اختاري البطاقة'))) : '',
@@ -697,7 +726,7 @@ style: 'display:flex;flex-direction:column;align-items:center;padding:12px 6px;b
 emoji: 'font-size:40px;line-height:1.2;' + (ok ? '' : 'opacity:.5'),
 go: () => this.say(ok ? 'ما شاء الله! ' + r.n + ' صارت لك' : t('اجمع ', 'اجمعي ') + ar(r.need - s.stars) + ' نجمة لتفتح هذه المكافأة'.replace('لتفتح', t('لتفتح', 'لتفتحي')), '') }; }),
 hasRw: !!newRw, rwTxt: newRw ? '🎁 مكافأة جديدة: ' + newRw.n : '',
-tabs: [['الرحلة', '#FF8A3D', () => this.setState({ view: 'map' })], ['مكافآتي', '#FF6FA5', () => { if (!s.riding) this.setState({ view: 'rewards' }); }], ['ألعاب', '#20B2A6', () => { if (!s.riding) this.setState({ view: 'games' }); }]].map((x, i) => ({ label: x[0], go: x[2],
+tabs: [['الرحلة', '#FF8A3D', () => this.setState({ view: 'map' })], ['مكافآتي', '#FF6FA5', () => { if (!s.riding) this.setState({ view: 'rewards' }); }], ['ألعاب', '#20B2A6', () => { if (!s.riding) this.setState({ view: 'games' }); }], ['حديقتي', '#6FBF4F', () => { if (!s.riding) this.setState({ view: 'garden' }); }]].map((x, i) => ({ label: x[0] + (i === 3 && this.gdGet().w > 0 ? ' 💧' + ar(this.gdGet().w) : ''), go: x[2],
 style: 'flex:1;border:0;background:#fff;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-family:inherit;color:#1F2A5A;font-weight:' + (i === tabIdx ? 700 : 600),
 dot: 'width:30px;height:30px;border-radius:15px;background:' + x[1] + ';opacity:' + (i === tabIdx ? 1 : 0.55) })),
 lendTitle: s.passed ? (s.level >= 5 ? t('أنهيتَ كل المستويات!', 'أنهيتِ كل المستويات!') : t('أنهيتَ المستوى ', 'أنهيتِ المستوى ') + ar(s.level) + '!') : (s.day >= 4 ? 'ما زال ينقص القليل!' : t('أنهيتَ اليوم ', 'أنهيتِ اليوم ') + ar(s.day) + ' من ٤!'),
@@ -756,7 +785,7 @@ setTimeout(() => this.setState({ popping: false }), 650);
 if (fin) setTimeout(() => this.enterCheer(), 1000);
 }
 });
-try { const o = {}; ['level','tab','progress','alt','stars','saves','gameStars','maxDone','day','lvSt','lvStars','passed','muted','dayDate','shift','hist'].forEach((k) => { o[k] = s[k]; }); const js = JSON.stringify({ v: 2, t: Date.now(), s: o }); if (js !== this.lastDb) { this.lastDb = js; window.localStorage.setItem(this.dbKey, js); } } catch (e) {}
+try { const o = {}; ['level','tab','progress','alt','stars','saves','gameStars','maxDone','day','lvSt','lvStars','passed','muted','dayDate','shift','hist','gd'].forEach((k) => { o[k] = s[k]; }); const js = JSON.stringify({ v: 2, t: Date.now(), s: o }); if (js !== this.lastDb) { this.lastDb = js; window.localStorage.setItem(this.dbKey, js); } } catch (e) {}
 try { const lv = JSON.stringify({ level: s.level, day: s.day, stars: s.stars, badges: Math.min(md, 5) }); if (lv !== this.lastLive) { this.lastLive = lv; window.localStorage.setItem('tk_live_' + this.kid, lv); } } catch (e) {}
 return out;
 }
